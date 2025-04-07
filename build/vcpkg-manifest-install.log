@@ -1,0 +1,78 @@
+Fetching registry information from https://github.com/microsoft/vcpkg (HEAD)...
+Detecting compiler hash for triplet x64-windows...
+Compiler found: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x64/cl.exe
+Detecting compiler hash for triplet x86-windows...
+Compiler found: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.42.34433/bin/Hostx64/x86/cl.exe
+The following packages will be built and installed:
+  * brotli:x86-windows@1.1.0#1 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\4e5b5ae1ad26c80535c893cc0307121f0398549e
+  * bzip2[core,tool]:x86-windows@1.0.8#6 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\2d029da682847c5ebdc54e4dbea001331a02207e
+  * egl-registry:x86-windows@2024-01-25 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\d883db43133dd223c4ffdbef4193943f6784d43a
+    freetype[brotli,bzip2,core,png,zlib]:x86-windows@2.13.3 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\8a2c633dcc14eaabdb31cf4637242f4e3c2f3fa2
+    glew:x86-windows@2.2.0#6 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\98d4ecc965968cdc8c85c0347c4638bbda36bef4
+    glfw3:x86-windows@3.4#1 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\d4bbd4f27c2ca619f57778985120cddcedadb1cc
+  * libpng:x86-windows@1.6.46 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\0074ace75112e0a4ff3465de21e692c07d6e6b5f
+  * opengl:x86-windows@2022-12-04#3 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\c3ae71738f88449ebcd781cef60d9a253fa091d4
+  * opengl-registry:x86-windows@2024-02-10#1 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\22f7aa58ee78c9f0db904b6251e9265f2be26f9d
+  * vcpkg-cmake:x64-windows@2024-04-23 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\e74aa1e8f93278a8e71372f1fa08c3df420eb840
+  * vcpkg-cmake-config:x64-windows@2024-05-23 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\97a63e4bc1a17422ffe4eff71da53b4b561a7841
+  * zlib:x86-windows@1.3.1 -- D:\profile redirect\nfite\AppData\Local\vcpkg\registries\git-trees\3f05e04b9aededb96786a911a16193cdb711f0c9
+Additional packages (*) will be modified to complete this operation.
+Restored 12 package(s) from D:\profile redirect\nfite\AppData\Local\vcpkg\archives in 661 ms. Use --debug to see more details.
+Installing 1/12 vcpkg-cmake:x64-windows@2024-04-23...
+Elapsed time to handle vcpkg-cmake:x64-windows: 199 ms
+vcpkg-cmake:x64-windows package ABI: 768e8e9527d8e4da4e4f5201b8668b1aaa730404b95bd4d050fc577708be38c4
+Installing 2/12 zlib:x86-windows@1.3.1...
+Elapsed time to handle zlib:x86-windows: 22.9 ms
+zlib:x86-windows package ABI: dc625258ea90ea7fb14fca7f782f227df93e6b6d13181c4b4acad93e81d97579
+Installing 3/12 vcpkg-cmake-config:x64-windows@2024-05-23...
+Elapsed time to handle vcpkg-cmake-config:x64-windows: 8.49 ms
+vcpkg-cmake-config:x64-windows package ABI: 62d5b40b38e57df315e62b9612f30ac3f65193f0620ca3ad58af57b230749b95
+Installing 4/12 libpng:x86-windows@1.6.46...
+Elapsed time to handle libpng:x86-windows: 37.1 ms
+libpng:x86-windows package ABI: 5e9ea9d2b52e382455648e0fea6ca09426571ff579c330d5663764b88176602f
+Installing 5/12 bzip2[core,tool]:x86-windows@1.0.8#6...
+Elapsed time to handle bzip2:x86-windows: 25.8 ms
+bzip2:x86-windows package ABI: f9d539dcfbd9fd10799c8c19f8f33720fb57520fd906d6c20b2ab861cce608a9
+Installing 6/12 brotli:x86-windows@1.1.0#1...
+Elapsed time to handle brotli:x86-windows: 88.2 ms
+brotli:x86-windows package ABI: ccd8e47ce51eefff06fdc6a2ccfbc5a8914de9d74907f12a054391d5bb462fb9
+Installing 7/12 freetype[brotli,bzip2,core,png,zlib]:x86-windows@2.13.3...
+Elapsed time to handle freetype:x86-windows: 78.6 ms
+freetype:x86-windows package ABI: 7ae1f673971a7ad37a3f160be635a8b079ff273c81046b3a161693b558977234
+Installing 8/12 egl-registry:x86-windows@2024-01-25...
+Elapsed time to handle egl-registry:x86-windows: 11.1 ms
+egl-registry:x86-windows package ABI: 5f6b2782910016068ee7974816b3bc38679de882a061c809b27631167199acb4
+Installing 9/12 opengl-registry:x86-windows@2024-02-10#1...
+Elapsed time to handle opengl-registry:x86-windows: 37.7 ms
+opengl-registry:x86-windows package ABI: e13a28edad313074eb72ef774bbe63bdc3cbe3354d83b95191133b3681722310
+Installing 10/12 opengl:x86-windows@2022-12-04#3...
+Elapsed time to handle opengl:x86-windows: 16.3 ms
+opengl:x86-windows package ABI: 44c98065bba12c47287593f3e79350d4869d7f93d7dac1f4ca74a6fa74be7f1f
+Installing 11/12 glew:x86-windows@2.2.0#6...
+Elapsed time to handle glew:x86-windows: 30 ms
+glew:x86-windows package ABI: 7a05751d65cd0dba127f029375ef74145e9bce10b8b5b29ce1f47d419fb06f3b
+Installing 12/12 glfw3:x86-windows@3.4#1...
+Elapsed time to handle glfw3:x86-windows: 27.1 ms
+glfw3:x86-windows package ABI: 4817a74944c238b5e63eeda7adeaef53f9d5689a4603c536b58dce8b405ce3b1
+Total install time: 592 ms
+freetype is compatible with built-in CMake targets:
+
+    find_package(Freetype REQUIRED)
+    target_link_libraries(main PRIVATE Freetype::Freetype) # since CMake 3.10
+
+The package glew is compatible with built-in CMake targets:
+
+    find_package(GLEW REQUIRED)
+    target_link_libraries(main PRIVATE GLEW::GLEW)
+
+glfw3 provides CMake targets:
+
+  # this is heuristically generated, and may not be correct
+  find_package(glfw3 CONFIG REQUIRED)
+  target_link_libraries(main PRIVATE glfw)
+
+glfw3 provides pkg-config modules:
+
+  # A multi-platform library for OpenGL, window and input
+  glfw3
+
