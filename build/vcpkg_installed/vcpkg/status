@@ -2,7 +2,7 @@ Package: vcpkg-cmake
 Version: 2024-04-23
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 768e8e9527d8e4da4e4f5201b8668b1aaa730404b95bd4d050fc577708be38c4
+Abi: 445345b4b5d688033f6d762659009d3547124b54e7084b731c6b7421bc9117a7
 Status: install ok installed
 
 Package: zlib
@@ -10,7 +10,7 @@ Version: 1.3.1
 Depends: vcpkg-cmake:x64-windows
 Architecture: x86-windows
 Multi-Arch: same
-Abi: dc625258ea90ea7fb14fca7f782f227df93e6b6d13181c4b4acad93e81d97579
+Abi: 992d324016c4ce16f6022949afb9eae860d7f90b55be34cd2d3e8689b0cc5988
 Description: A compression library
 Status: install ok installed
 
@@ -18,7 +18,7 @@ Package: vcpkg-cmake-config
 Version: 2024-05-23
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 62d5b40b38e57df315e62b9612f30ac3f65193f0620ca3ad58af57b230749b95
+Abi: 15dc140d7aa3c4916a610df7669bec76b0c394e11c1783cad2db0b03188d4f98
 Status: install ok installed
 
 Package: libpng
@@ -26,7 +26,7 @@ Version: 1.6.46
 Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
 Architecture: x86-windows
 Multi-Arch: same
-Abi: 5e9ea9d2b52e382455648e0fea6ca09426571ff579c330d5663764b88176602f
+Abi: a619830449715d20f152c85e23d374641e9db05a9cf20465a3f27ccd30d2f3bf
 Description: libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files
 Status: install ok installed
 
@@ -36,7 +36,7 @@ Port-Version: 6
 Depends: vcpkg-cmake:x64-windows
 Architecture: x86-windows
 Multi-Arch: same
-Abi: f9d539dcfbd9fd10799c8c19f8f33720fb57520fd906d6c20b2ab861cce608a9
+Abi: 88f4b74559f4cc3c940afc9fe9dba8ba514f22886c972a069e53528f75aeea70
 Description: bzip2 is a freely available, patent free, high-quality data compressor. It typically compresses files to within 10% to 15% of the best available techniques (the PPM family of statistical compressors), whilst being around twice as fast at compression and six times faster at decompression.
 Default-Features: tool
 Status: install ok installed
@@ -54,7 +54,7 @@ Port-Version: 1
 Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
 Architecture: x86-windows
 Multi-Arch: same
-Abi: ccd8e47ce51eefff06fdc6a2ccfbc5a8914de9d74907f12a054391d5bb462fb9
+Abi: 260674645056e44281d661c935dd1b9aeec0b42130908878a9b69e2e5ba8c0e9
 Description: a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling.
 Status: install ok installed
 
@@ -63,7 +63,7 @@ Version: 2.13.3
 Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
 Architecture: x86-windows
 Multi-Arch: same
-Abi: 7ae1f673971a7ad37a3f160be635a8b079ff273c81046b3a161693b558977234
+Abi: c2473e6d4209270a4dff12f0123a1b5497477767d8ba3ae9f62eb39bbb38141f
 Description: A library to render fonts.
 Default-Features: brotli, bzip2, png, zlib
 Status: install ok installed
@@ -104,7 +104,7 @@ Package: egl-registry
 Version: 2024-01-25
 Architecture: x86-windows
 Multi-Arch: same
-Abi: 5f6b2782910016068ee7974816b3bc38679de882a061c809b27631167199acb4
+Abi: e8d926c086f60b00788dbc83f8f3aa3816165d06f6a401b87b42eab41d7a610a
 Description: EGL API and Extension Registry
 Status: install ok installed
 
@@ -114,7 +114,7 @@ Port-Version: 1
 Depends: egl-registry
 Architecture: x86-windows
 Multi-Arch: same
-Abi: e13a28edad313074eb72ef774bbe63bdc3cbe3354d83b95191133b3681722310
+Abi: d0fe752672e8d9fdd0e8562ff1fd2c7bd849ad8a7ff1260f0cd4667eff917c4f
 Description: OpenGL, OpenGL ES, and OpenGL ES-SC API and Extension Registry
 Status: install ok installed
 
@@ -124,7 +124,7 @@ Port-Version: 3
 Depends: opengl-registry
 Architecture: x86-windows
 Multi-Arch: same
-Abi: 44c98065bba12c47287593f3e79350d4869d7f93d7dac1f4ca74a6fa74be7f1f
+Abi: 4c05763f6c9ddc2439d7678422d9bf3c243adc214405c81f351ce644fdf80f3d
 Description: Open Graphics Library (OpenGL)[3][4][5] is a cross-language, cross-platform application programming interface (API) for rendering 2D and 3D vector graphics.
 Status: install ok installed
 
@@ -134,7 +134,7 @@ Port-Version: 6
 Depends: opengl, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
 Architecture: x86-windows
 Multi-Arch: same
-Abi: 7a05751d65cd0dba127f029375ef74145e9bce10b8b5b29ce1f47d419fb06f3b
+Abi: e1dbfe2a9f6472f1fddb8a7fd749fa0d25cfc812f773e2fd095b062d41dae58d
 Description: The OpenGL Extension Wrangler Library (GLEW) is a cross-platform open-source C/C++ extension loading library.
 Status: install ok installed
 
@@ -144,7 +144,108 @@ Port-Version: 1
 Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
 Architecture: x86-windows
 Multi-Arch: same
-Abi: 4817a74944c238b5e63eeda7adeaef53f9d5689a4603c536b58dce8b405ce3b1
+Abi: 2593219b4afab803ea43c6df127d07ec6d5e4b26e9273dac19e19525389c1ff5
 Description: GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development. It provides a simple, platform-independent API for creating windows, contexts and surfaces, reading input, handling events, etc.
+Status: install ok installed
+
+Package: utfcpp
+Version: 4.0.6
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x86-windows
+Multi-Arch: same
+Abi: ec72c28058f16d62494454367ac6ab614c0ff11db2bade0484cd738d792b2dc6
+Description: UTF-8 with C++ in a Portable Way
+Status: install ok installed
+
+Package: stb
+Version: 2024-07-29
+Port-Version: 1
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 35245712ae9274d0c9e7acc59827048539e7254297df8f3688b124925347a5d7
+Description: public domain header-only libraries
+Status: install ok installed
+
+Package: rapidjson
+Version: 2025-02-26
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 548fbed480e197e520cd1f5506f3245dd981ca4cf561da0eedb63e98ed89e165
+Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
+Status: install ok installed
+
+Package: pugixml
+Version: 1.15
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 4971f3ac010d0cf50ffefe9ddfd559aef2b19f4fe3584e1e2fa2e4be5d96ba16
+Description: Light-weight, simple and fast XML parser for C++ with XPath support
+Status: install ok installed
+
+Package: polyclipping
+Version: 6.4.2
+Port-Version: 13
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 513d46488f6ef28ea0005706c314567496af8fa7d12f3539eb92b76c9d3d9aa2
+Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
+Status: install ok installed
+
+Package: vcpkg-cmake-get-vars
+Version: 2024-09-22
+Depends: vcpkg-cmake
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 4f89e0fe2945cf6191a608f0b16f0cd8159c83f5b48c7cb662e5374255966d4a
+Status: install ok installed
+
+Package: minizip
+Version: 1.3.1
+Port-Version: 1
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, vcpkg-cmake-get-vars:x64-windows, zlib
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 0ef16885b3859f2ec110e356a74531629883c6546eb8616e61de2ad60c93fd82
+Description: Minizip zip file manipulation library
+Status: install ok installed
+
+Package: kubazip
+Version: 0.3.3
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 82060aa74c0ca33fdd1195d3bd130e0dabd6d3236ca7005679a86b2c93598922
+Description: A portable, simple zip library written in C
+Status: install ok installed
+
+Package: jhasse-poly2tri
+Version: 2023-12-27
+Port-Version: 2
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x86-windows
+Multi-Arch: same
+Abi: deeee96d4b95a832d5ee122290beea13bfdee64e9b1a6eaa09bb771bbb585898
+Description: Sweep-line algorithm for constrained Delaunay triangulation
+Status: install ok installed
+
+Package: draco
+Version: 1.5.7
+Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 009b744e79ed6351fb64cf217400bc047ac2c992af2150dbf5a9ac5f0b7e5a5d
+Description: A library for compressing and decompressing 3D geometric meshes and point clouds. It is intended to improve the storage and transmission of 3D graphics.
+Status: install ok installed
+
+Package: assimp
+Version: 5.4.3
+Depends: draco, jhasse-poly2tri, kubazip, minizip, polyclipping, pugixml, rapidjson, stb, utfcpp, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 5b87b24acfe5a3c934b2f76e03614ea36d21c8c14154f9c3b0f549de7986bf71
+Description: The Open Asset import library
 Status: install ok installed
 

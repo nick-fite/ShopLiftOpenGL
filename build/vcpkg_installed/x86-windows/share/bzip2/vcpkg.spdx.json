@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/bzip2-x86-windows-1.0.8#6-ea3894e5-7f95-4e75-bad9-976acfd3010e",
-  "name": "bzip2:x86-windows@1.0.8#6 f9d539dcfbd9fd10799c8c19f8f33720fb57520fd906d6c20b2ab861cce608a9",
+  "documentNamespace": "https://spdx.org/spdxdocs/bzip2-x86-windows-1.0.8#6-8066a36d-eae8-4595-892d-1b53ff0f37d3",
+  "name": "bzip2:x86-windows@1.0.8#6 88f4b74559f4cc3c940afc9fe9dba8ba514f22886c972a069e53528f75aeea70",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2025-03-22-d4dd14112c2026ee57e59f966ecfa3b9137bd143"
+      "Tool: vcpkg-2025-04-01-9c604254140797833b6f76908435c9fcbf09920e"
     ],
-    "created": "2025-04-07T16:06:05Z"
+    "created": "2025-04-10T18:39:53Z"
   },
   "relationships": [
     {
@@ -81,6 +81,11 @@
       "spdxElementId": "SPDXRef-file-5",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-5",
+      "relationshipType": "DEPENDENCY_MANIFEST_OF",
+      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -99,7 +104,7 @@
     {
       "name": "bzip2:x86-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "f9d539dcfbd9fd10799c8c19f8f33720fb57520fd906d6c20b2ab861cce608a9",
+      "versionInfo": "88f4b74559f4cc3c940afc9fe9dba8ba514f22886c972a069e53528f75aeea70",
       "downloadLocation": "NONE",
       "licenseConcluded": "bzip2-1.0.6",
       "licenseDeclared": "NOASSERTION",
@@ -108,9 +113,9 @@
     },
     {
       "SPDXID": "SPDXRef-resource-0",
-      "name": "bzip2-${VERSION}.tar.gz",
-      "packageFileName": "bzip2-${VERSION}.tar.gz",
-      "downloadLocation": "https://sourceware.org/pub/bzip2/bzip2-${VERSION}.tar.gz",
+      "name": "bzip2-1.0.8.tar.gz",
+      "packageFileName": "bzip2-1.0.8.tar.gz",
+      "downloadLocation": "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz",
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
@@ -124,7 +129,7 @@
   ],
   "files": [
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/2d029da682847c5ebdc54e4dbea001331a02207e/bzip2.pc.in",
+      "fileName": "./bzip2.pc.in",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -136,7 +141,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/2d029da682847c5ebdc54e4dbea001331a02207e/CMakeLists.txt",
+      "fileName": "./CMakeLists.txt",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -148,7 +153,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/2d029da682847c5ebdc54e4dbea001331a02207e/fix-import-export-macros.patch",
+      "fileName": "./fix-import-export-macros.patch",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
@@ -160,7 +165,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/2d029da682847c5ebdc54e4dbea001331a02207e/portfile.cmake",
+      "fileName": "./portfile.cmake",
       "SPDXID": "SPDXRef-file-3",
       "checksums": [
         {
@@ -172,7 +177,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/2d029da682847c5ebdc54e4dbea001331a02207e/usage",
+      "fileName": "./usage",
       "SPDXID": "SPDXRef-file-4",
       "checksums": [
         {
@@ -184,7 +189,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/2d029da682847c5ebdc54e4dbea001331a02207e/vcpkg.json",
+      "fileName": "./vcpkg.json",
       "SPDXID": "SPDXRef-file-5",
       "checksums": [
         {

@@ -1,3 +1,3 @@
-D:/profile redirect/nfite/Desktop/ShopLiftingBoyOpenGL/build/CMakeFiles/ShopliftingBoy.dir
-D:/profile redirect/nfite/Desktop/ShopLiftingBoyOpenGL/build/CMakeFiles/edit_cache.dir
-D:/profile redirect/nfite/Desktop/ShopLiftingBoyOpenGL/build/CMakeFiles/rebuild_cache.dir
+D:/profile redirect/nfite/Desktop/ShopLiftOpenGL/build/CMakeFiles/ShopliftingBoy.dir
+D:/profile redirect/nfite/Desktop/ShopLiftOpenGL/build/CMakeFiles/ALL_BUILD.dir
+D:/profile redirect/nfite/Desktop/ShopLiftOpenGL/build/CMakeFiles/ZERO_CHECK.dir

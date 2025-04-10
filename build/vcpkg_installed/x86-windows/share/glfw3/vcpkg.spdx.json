@@ -3,13 +3,13 @@
   "spdxVersion": "SPDX-2.2",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "documentNamespace": "https://spdx.org/spdxdocs/glfw3-x86-windows-3.4#1-6eb35ebd-caf3-48d2-9ec9-15eb9ea0dc05",
-  "name": "glfw3:x86-windows@3.4#1 4817a74944c238b5e63eeda7adeaef53f9d5689a4603c536b58dce8b405ce3b1",
+  "documentNamespace": "https://spdx.org/spdxdocs/glfw3-x86-windows-3.4#1-0cb98f7f-57e0-46ef-ae45-d6aef1f905bc",
+  "name": "glfw3:x86-windows@3.4#1 2593219b4afab803ea43c6df127d07ec6d5e4b26e9273dac19e19525389c1ff5",
   "creationInfo": {
     "creators": [
-      "Tool: vcpkg-2025-03-22-d4dd14112c2026ee57e59f966ecfa3b9137bd143"
+      "Tool: vcpkg-2025-04-01-9c604254140797833b6f76908435c9fcbf09920e"
     ],
-    "created": "2025-04-07T16:10:58Z"
+    "created": "2025-04-10T18:40:49Z"
   },
   "relationships": [
     {
@@ -51,6 +51,11 @@
       "spdxElementId": "SPDXRef-file-2",
       "relationshipType": "CONTAINED_BY",
       "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-2",
+      "relationshipType": "DEPENDENCY_MANIFEST_OF",
+      "relatedSpdxElement": "SPDXRef-port"
     }
   ],
   "packages": [
@@ -69,7 +74,7 @@
     {
       "name": "glfw3:x86-windows",
       "SPDXID": "SPDXRef-binary",
-      "versionInfo": "4817a74944c238b5e63eeda7adeaef53f9d5689a4603c536b58dce8b405ce3b1",
+      "versionInfo": "2593219b4afab803ea43c6df127d07ec6d5e4b26e9273dac19e19525389c1ff5",
       "downloadLocation": "NONE",
       "licenseConcluded": "Zlib",
       "licenseDeclared": "NOASSERTION",
@@ -93,7 +98,7 @@
   ],
   "files": [
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/d4bbd4f27c2ca619f57778985120cddcedadb1cc/glfw3Config.cmake",
+      "fileName": "./glfw3Config.cmake",
       "SPDXID": "SPDXRef-file-0",
       "checksums": [
         {
@@ -105,7 +110,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/d4bbd4f27c2ca619f57778985120cddcedadb1cc/portfile.cmake",
+      "fileName": "./portfile.cmake",
       "SPDXID": "SPDXRef-file-1",
       "checksums": [
         {
@@ -117,7 +122,7 @@
       "copyrightText": "NOASSERTION"
     },
     {
-      "fileName": "./D:/profile redirect/nfite/AppData/Local/vcpkg/registries/git-trees/d4bbd4f27c2ca619f57778985120cddcedadb1cc/vcpkg.json",
+      "fileName": "./vcpkg.json",
       "SPDXID": "SPDXRef-file-2",
       "checksums": [
         {
