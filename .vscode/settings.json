@@ -7,6 +7,9 @@
     "files.associations": {
         "glew.h": "c",
         "glfw3.h": "c",
-        "imgui.h": "c"
+        "imgui.h": "c",
+        "fstream": "cpp",
+        "string": "cpp",
+        "iostream": "cpp"
     }
 }

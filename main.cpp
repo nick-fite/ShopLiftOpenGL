@@ -1,8 +1,10 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "src/Mesh.h"
-#include "src/Transform3D.h"
+#include "src/Mesh/Mesh.h"
+#include "src/Transform/Transform3D.h"
+#include "src/Shaders/Shader.h"
+#include "src/Shaders/ShadersProgram/ShadersProgram.h"
 #include <vector>
 #include <iostream>
     
@@ -24,7 +26,7 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 int main() {
     glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(ViewportDimensions.x, ViewportDimensions.y, "Hello World", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(ViewportDimensions.x, ViewportDimensions.y, "Model", NULL, NULL);
     glfwMakeContextCurrent(window);
 
     glfwSetFramebufferSizeCallback(window, resizeCallback);
@@ -37,11 +39,28 @@ int main() {
 
     Mesh* mesh = new Mesh("assets/TestPlayer.fbx");
 
+    Shader* vertShader = new Shader("assets/Shaders/Vertex.glsl", GL_VERTEX_SHADER);
+    Shader* fragShader = new Shader("\assets/Shaders/Fragment.glsl", GL_FRAGMENT_SHADER);
     
+    ShaderProgram* shaderProgram = new ShaderProgram();
+    shaderProgram->AttachShader(vertShader);
+    shaderProgram->AttachShader(fragShader);
+
+    while(!glfwWindowShouldClose(window))
+    {
+        float dt = glfwGetTime();
+        glfwSetTime(0);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        glClearColor(0.0,0.0,0.0, 0.0);
+
+        mesh->DrawMesh();
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
     
+    glfwTerminate();
 
-
-
-    cout << "hello world!" << endl;
     return 1;
 }
