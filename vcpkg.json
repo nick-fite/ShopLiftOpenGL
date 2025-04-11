@@ -4,6 +4,7 @@
     "freetype",
     "glew",
     "glfw3",
-    "glm"
+    "glm",
+    "freeimage"
   ]
 }

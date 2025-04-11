@@ -17,7 +17,7 @@ Mesh::Mesh(std::string filePath)
     
     if(!file.good())
     {
-        std::cout << "bad file: " << filePath << std::endl;
+        std::cout << "what the fuc\n"<< "bad file: " << filePath << std::endl;
         return;
     }
 

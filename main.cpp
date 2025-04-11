@@ -5,6 +5,7 @@
 #include "src/Transform/Transform3D.h"
 #include "src/Shaders/Shader.h"
 #include "src/Shaders/ShadersProgram/ShadersProgram.h"
+#include "src/Controllers/FPSController.h"
 #include <vector>
 #include <iostream>
     
@@ -32,24 +33,36 @@ int main() {
     glfwSetFramebufferSizeCallback(window, resizeCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
 
+    
+    glewInit();
+    
+    Mesh* mesh = new Mesh("D:\\profile redirect\\nfite\\Desktop\\ShopLiftingBoyOpenGL\\assets\\TestAssets\\cube.obj");
+    
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
 
-    glewInit();
+    FPSController controller = FPSController();    
 
-    Mesh* mesh = new Mesh("assets/TestPlayer.fbx");
-
-    Shader* vertShader = new Shader("assets/Shaders/Vertex.glsl", GL_VERTEX_SHADER);
-    Shader* fragShader = new Shader("\assets/Shaders/Fragment.glsl", GL_FRAGMENT_SHADER);
+    Shader* vertShader = new Shader("D:\\profile redirect\\nfite\\Desktop\\ShopLiftingBoyOpenGL\\assets\\Shaders\\Vertex.glsl", GL_VERTEX_SHADER);
+    Shader* fragShader = new Shader("D:\\profile redirect\\nfite\\Desktop\\ShopLiftingBoyOpenGL\\assets\\Shaders\\Fragment.glsl", GL_FRAGMENT_SHADER);
     
+    char cameraViewVS[] = "cameraView";
+    char worldMatrixVS[] = "worldMatrix";
+    char textureFS[] = "tex";
+
     ShaderProgram* shaderProgram = new ShaderProgram();
     shaderProgram->AttachShader(vertShader);
     shaderProgram->AttachShader(fragShader);
+
+    std::cout << "hello world" << std::endl << std::endl;
 
     while(!glfwWindowShouldClose(window))
     {
         float dt = glfwGetTime();
         glfwSetTime(0);
+
+        controller.Update(window, ViewportDimensions, MousePos, dt);
+
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);

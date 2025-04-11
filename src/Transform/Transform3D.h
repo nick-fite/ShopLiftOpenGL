@@ -1,3 +1,4 @@
+#pragma once
 #include <glm/gtc/matrix_transform.hpp>
 
 //yes, header only files are not usually the best practice. However, given the nature of this tool,
@@ -16,7 +17,12 @@ private:
     glm::mat4 inverseMatrix;
 
 public:
-    Transform3D();
+    Transform3D() {
+        scale = 1;
+        rotation = glm::vec3();
+        position = glm::vec3();
+        matrix = inverseMatrix = glm::mat4();
+    };
     
     float getScale() const {
         return scale;
@@ -38,6 +44,11 @@ public:
     void SetPosition(glm::vec3 pos) {
         position = pos;
         matrixDirty = inverseDirty =  true;
+    };
+    void SetRotation(glm::vec3 rot) {
+        rotation = rot;
+        matrixDirty = inverseDirty = true;
+
     };
 
     void RotateX(float rot){

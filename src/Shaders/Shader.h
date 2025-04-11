@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gl/glew.h>
 #include <glfw/glfw3.h>
 #include <string>
