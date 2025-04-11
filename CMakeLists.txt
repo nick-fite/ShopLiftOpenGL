@@ -2,14 +2,27 @@ cmake_minimum_required(VERSION 3.10)
 
 project(ShopliftingBoy)
 
-set(CMAKE_C++_STANDARD 99)
+set(CMAKE_CXX_STANDARD 17)
+
+# Ensure vcpkg integration
+set(CMAKE_TOOLCHAIN_FILE "C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
 find_package(glfw3 REQUIRED)
-find_package(glew  REQUIRED)
-find_package(Freetype  REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(Freetype REQUIRED)
 find_package(assimp REQUIRED)
 find_package(glm REQUIRED)
+find_package(OpenGL REQUIRED)
 
-add_executable(ShopliftingBoy main.cpp src/Mesh.h src/Mesh.cpp)
+set(SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-target_link_libraries(ShopliftingBoy PRIVATE glfw Freetype::Freetype GLEW::GLEW assimp::assimp glm::glm OpenGL32)
+file(GLOB_RECURSE SRC_FILES 
+    "${SRC}/*.cpp"
+    "${SRC}/*.h"
+    "${SRC}/*.hpp"
+    "${SRC}/*.c"
+)
+
+add_executable(ShopliftingBoy main.cpp ${SRC_FILES})
+
+target_link_libraries(ShopliftingBoy PRIVATE glfw GLEW::GLEW Freetype::Freetype assimp::assimp glm::glm OpenGL::GL)
