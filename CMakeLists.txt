@@ -15,7 +15,7 @@ find_package(GLEW REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(assimp REQUIRED)
 find_package(glm REQUIRED)
-find_package(FreeImage REQUIRED)
+find_package(freeimage REQUIRED)
 find_package(OpenGL REQUIRED)
 
 set(SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -35,6 +35,7 @@ target_link_libraries(ShopliftingBoy PRIVATE
     Freetype::Freetype
     assimp::assimp
     glm::glm
-    FreeImage
+    freeimage::FreeImage
+    freeimage::FreeImagePlus
     OpenGL::GL
 )
