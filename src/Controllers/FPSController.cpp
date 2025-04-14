@@ -25,7 +25,7 @@ void FPSController::Update(GLFWwindow* window, glm::vec2 viewportDimmensions, gl
     pitch -= (int)mouseMovement.y * .001f;
 
     float halfpi = 3.1416f/ 2.f;
-    if(pitch < halfpi) pitch = -halfpi;
+    if(pitch < -halfpi) pitch = -halfpi;
     else if (pitch > halfpi) pitch = halfpi;
 
     m_transform.SetRotation(glm::vec3(pitch,yaw,0));

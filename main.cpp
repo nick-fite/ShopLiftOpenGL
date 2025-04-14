@@ -6,6 +6,7 @@
 #include "src/Shaders/Shader.h"
 #include "src/Shaders/ShadersProgram/ShadersProgram.h"
 #include "src/Controllers/FPSController.h"
+#include "src/Material/Material.h"
 #include <vector>
 #include <iostream>
     
@@ -36,23 +37,28 @@ int main() {
     
     glewInit();
     
-    Mesh* mesh = new Mesh("D:\\profile redirect\\nfite\\Desktop\\ShopLiftingBoyOpenGL\\assets\\TestAssets\\cube.obj");
+    Mesh* mesh = new Mesh("D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\TestAssets\\cube.obj");
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
 
     FPSController controller = FPSController();    
-
-    Shader* vertShader = new Shader("D:\\profile redirect\\nfite\\Desktop\\ShopLiftingBoyOpenGL\\assets\\Shaders\\Vertex.glsl", GL_VERTEX_SHADER);
-    Shader* fragShader = new Shader("D:\\profile redirect\\nfite\\Desktop\\ShopLiftingBoyOpenGL\\assets\\Shaders\\Fragment.glsl", GL_FRAGMENT_SHADER);
+    Shader* vertShader = new Shader("D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\Shaders\\Vertex.glsl", GL_VERTEX_SHADER);
+    Shader* fragShader = new Shader("D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\Shaders\\Fragment.glsl", GL_FRAGMENT_SHADER);
     
     char cameraViewVS[] = "cameraView";
     char worldMatrixVS[] = "worldMatrix";
     char textureFS[] = "tex";
 
+    char textureFile[] = "D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\TestAssets\\Textures\\Solid_blue.png";
+
     ShaderProgram* shaderProgram = new ShaderProgram();
     shaderProgram->AttachShader(vertShader);
     shaderProgram->AttachShader(fragShader);
+
+    Material* mat = new Material(shaderProgram);
+    mat->SetTexture(textureFS, new Texture(textureFile));
+    
 
     std::cout << "hello world" << std::endl << std::endl;
 
@@ -63,10 +69,19 @@ int main() {
 
         controller.Update(window, ViewportDimensions, MousePos, dt);
 
+        glm::mat4 view = controller.GetTransform().GetInverseMatrix();
+        glm::mat4 projection = glm::perspective(.75f, ViewportDimensions.x/ViewportDimensions.y, .1f, 100.f);
+        glm::mat4 viewProjection = projection * view;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.0,0.0,0.0, 0.0);
+
+        mat->SetMatrix(cameraViewVS, view);
+        mat->SetMatrix(worldMatrixVS, transform.GetMatrix());
+
+        mat->Bind();
+        
 
         mesh->DrawMesh();
         glfwSwapBuffers(window);
