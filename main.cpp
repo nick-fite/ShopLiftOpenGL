@@ -37,7 +37,7 @@ int main() {
     
     glewInit();
     
-    Mesh* mesh = new Mesh("D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\TestAssets\\cube.obj");
+    Mesh* mesh = new Mesh("D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\TestAssets\\TestPlayer.fbx");
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
