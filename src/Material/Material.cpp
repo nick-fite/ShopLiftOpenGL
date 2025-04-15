@@ -24,7 +24,7 @@ void Material::SetTexture(char* name, Texture* texture)
 
     if(uniform == -1)
     {
-        std::cout << "Uniform: " << name << " not found in shader program." << std::endl;
+        //std::cout << "Uniform: " << name << " not found in shader program." << std::endl;
         return;
     }
 
@@ -51,7 +51,7 @@ void Material::SetMatrix(char* name, glm::mat4 matrix)
 
     if(uniform == -1)
     {
-        std::cout << "Uniform: " << name << " not found in shader program." << std::endl;
+        //std::cout << "Uniform: " << name << " not found in shader program." << std::endl;
         return;
     }
 

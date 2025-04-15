@@ -37,20 +37,20 @@ int main() {
     
     glewInit();
     
-    Mesh* mesh = new Mesh("D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\TestAssets\\TestPlayer.fbx");
+    Mesh* mesh = new Mesh("../../assets/TestAssets/cube.obj");
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
 
     FPSController controller = FPSController();    
-    Shader* vertShader = new Shader("D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\Shaders\\Vertex.glsl", GL_VERTEX_SHADER);
-    Shader* fragShader = new Shader("D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\Shaders\\Fragment.glsl", GL_FRAGMENT_SHADER);
+    Shader* vertShader = new Shader("../../assets/Shaders/Vertex.glsl", GL_VERTEX_SHADER);
+    Shader* fragShader = new Shader("../../assets/Shaders/Fragment.glsl", GL_FRAGMENT_SHADER);
     
     char cameraViewVS[] = "cameraView";
     char worldMatrixVS[] = "worldMatrix";
     char textureFS[] = "tex";
 
-    char textureFile[] = "D:\\profile redirect\\nfite\\Desktop\\ShopLiftOpenGL\\assets\\TestAssets\\Textures\\Solid_blue.png";
+    char textureFile[] = "../../assets/TestAssets/Textures/BrickColor.png";
 
     ShaderProgram* shaderProgram = new ShaderProgram();
     shaderProgram->AttachShader(vertShader);
