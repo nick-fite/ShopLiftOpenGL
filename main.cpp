@@ -37,12 +37,13 @@ int main() {
     
     glewInit();
     
-    Mesh* mesh = new Mesh("../../assets/TestAssets/cube.obj");
+    Mesh* mesh = new Mesh("../../assets/TestAssets/testPlayer.fbx");
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
 
-    FPSController controller = FPSController();    
+    FPSController controller = FPSController();
+
     Shader* vertShader = new Shader("../../assets/Shaders/Vertex.glsl", GL_VERTEX_SHADER);
     Shader* fragShader = new Shader("../../assets/Shaders/Fragment.glsl", GL_FRAGMENT_SHADER);
     
@@ -77,17 +78,18 @@ int main() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.0,0.0,0.0, 0.0);
 
-        mat->SetMatrix(cameraViewVS, view);
+        mat->SetMatrix(cameraViewVS, viewProjection);
         mat->SetMatrix(worldMatrixVS, transform.GetMatrix());
 
         mat->Bind();
-        
 
         mesh->DrawMesh();
+        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     
+    delete mat;
     glfwTerminate();
 
     return 1;

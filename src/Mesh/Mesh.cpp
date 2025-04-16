@@ -5,7 +5,7 @@
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/LogStream.hpp>
 
-Mesh::Mesh(std::vector<MeshData> vertices, std::vector<unsigned int> indices)
+Mesh::Mesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices)
 {
     MakeMesh(vertices, indices);
 }
@@ -64,7 +64,7 @@ Mesh::Mesh(std::string filePath)
     MakeMesh(m_vertices, m_indices);
 
 }
-void Mesh::MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned int> indices)
+void Mesh::MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices)
 {
     vertices = vertices;
     indices = indices;
@@ -77,7 +77,7 @@ void Mesh::MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned int> in
     //indicies buffer
     glGenBuffers(1, &m_indexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, m_indexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned int), &m_indices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }

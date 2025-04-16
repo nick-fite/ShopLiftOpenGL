@@ -21,13 +21,13 @@ struct MeshData {
 
 class Mesh {
 public:
-    Mesh(std::vector<MeshData> vertices, std::vector<unsigned int> indices);
+    Mesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices);
     Mesh(std::string filePath);
     ~Mesh();
 private:
-void MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned int> indices);
+void MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices);
     std::vector<MeshData> m_vertices;
-    std::vector<unsigned int> m_indices;
+    std::vector<unsigned short> m_indices;
 
     GLuint m_vertextBuffer;
     GLuint m_indexBuffer;
