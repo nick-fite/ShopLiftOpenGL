@@ -22,7 +22,7 @@ struct MeshData {
 class Mesh {
 public:
     Mesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices);
-    Mesh(std::string filePath);
+    Mesh(std::string filePath, int meshNum);
     ~Mesh();
 private:
 void MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices);

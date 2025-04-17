@@ -37,7 +37,8 @@ int main() {
     
     glewInit();
     
-    Mesh* mesh = new Mesh("../../assets/TestAssets/testPlayer.fbx");
+    Mesh* mesh1 = new Mesh("../../assets/TestAssets/testPlayer.fbx", 0);
+    Mesh* mesh2 = new Mesh("../../assets/TestAssets/testPlayer.fbx", 1);
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
@@ -51,7 +52,7 @@ int main() {
     char worldMatrixVS[] = "worldMatrix";
     char textureFS[] = "tex";
 
-    char textureFile[] = "../../assets/TestAssets/Textures/BrickColor.png";
+    char textureFile[] = "../../assets/TestAssets/Textures/Solid_Blue.png";
 
     ShaderProgram* shaderProgram = new ShaderProgram();
     shaderProgram->AttachShader(vertShader);
@@ -83,7 +84,8 @@ int main() {
 
         mat->Bind();
 
-        mesh->DrawMesh();
+        mesh1->DrawMesh();
+        mesh2->DrawMesh();
         
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -93,7 +95,8 @@ int main() {
     delete shaderProgram;
     delete vertShader;
     delete fragShader;
-    delete mesh;
+    delete mesh1;
+    delete mesh2;
     glfwTerminate();
 
     return 1;

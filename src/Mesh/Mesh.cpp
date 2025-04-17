@@ -11,7 +11,7 @@ Mesh::Mesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices)
 }
 
 
-Mesh::Mesh(std::string filePath)
+Mesh::Mesh(std::string filePath, int meshNum)
 {
     std::ifstream file(filePath);
     
@@ -31,8 +31,7 @@ Mesh::Mesh(std::string filePath)
     }
 
     //this what indicates how many meshes are being imported. If I take in multiple in the same fbx will this process it?
-    const struct aiMesh* mesh = scene->mMeshes[0];
-    
+    const struct aiMesh* mesh = scene->mMeshes[meshNum];
     for(t = 0; t < mesh->mNumVertices; ++t)
     {
         MeshData v;
