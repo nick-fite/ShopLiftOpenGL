@@ -90,6 +90,10 @@ int main() {
     }
     
     delete mat;
+    delete shaderProgram;
+    delete vertShader;
+    delete fragShader;
+    delete mesh;
     glfwTerminate();
 
     return 1;
