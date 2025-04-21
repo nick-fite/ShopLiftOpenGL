@@ -26,9 +26,12 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 int main() {
+
     glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(ViewportDimensions.x, ViewportDimensions.y, "Model", NULL, NULL);
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+    GLFWwindow* window = glfwCreateWindow(mode->width/1.5, mode->height/1.5, "Model", NULL, NULL);
     glfwMakeContextCurrent(window);
 
     glfwSetFramebufferSizeCallback(window, resizeCallback);
@@ -61,9 +64,6 @@ int main() {
     Material* mat = new Material(shaderProgram);
     mat->SetTexture(textureFS, new Texture(textureFile));
     
-
-    std::cout << "hello world" << std::endl << std::endl;
-
     while(!glfwWindowShouldClose(window))
     {
         float dt = glfwGetTime();
@@ -72,7 +72,7 @@ int main() {
         controller.Update(window, ViewportDimensions, MousePos, dt);
 
         glm::mat4 view = controller.GetTransform().GetInverseMatrix();
-        glm::mat4 projection = glm::perspective(.75f, ViewportDimensions.x/ViewportDimensions.y, .1f, 100.f);
+        glm::mat4 projection = glm::perspective(1.f, ViewportDimensions.x/ViewportDimensions.y, .1f, 1000.f);
         glm::mat4 viewProjection = projection * view;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -48,4 +48,12 @@ void FPSController::Update(GLFWwindow* window, glm::vec2 viewportDimmensions, gl
     {
         m_transform.Translate(m_transform.GetRight() * 50.f * deltaTime);
     }
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) 
+    {
+        m_transform.Translate(glm::vec3(0.f,1.f,0.f) * 50.f * deltaTime);
+    }
+    if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) 
+    {
+        m_transform.Translate(glm::vec3(0.f,1.f,0.f) * -50.f * deltaTime);
+    }
 }
