@@ -1,7 +1,7 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "src/Mesh/Mesh.h"
+#include "src/Object/Object.h"
 #include "src/Transform/Transform3D.h"
 #include "src/Shaders/Shader.h"
 #include "src/Shaders/ShadersProgram/ShadersProgram.h"
@@ -40,8 +40,7 @@ int main() {
     
     glewInit();
     
-    Mesh* mesh1 = new Mesh("../../assets/TestAssets/testPlayer.fbx", 0);
-    Mesh* mesh2 = new Mesh("../../assets/TestAssets/testPlayer.fbx", 1);
+    Object* obj = new Object("../../assets/TestAssets/Models/TestPlayer.fbx", "TestPlayer");
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
@@ -84,8 +83,7 @@ int main() {
 
         mat->Bind();
 
-        mesh1->DrawMesh();
-        mesh2->DrawMesh();
+        obj->DrawMeshes();
         
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -95,8 +93,7 @@ int main() {
     delete shaderProgram;
     delete vertShader;
     delete fragShader;
-    delete mesh1;
-    delete mesh2;
+    delete obj;
     glfwTerminate();
 
     return 1;

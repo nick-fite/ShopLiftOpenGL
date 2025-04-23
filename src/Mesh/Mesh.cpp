@@ -11,27 +11,13 @@ Mesh::Mesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices)
 }
 
 
-Mesh::Mesh(std::string filePath, int meshNum)
+Mesh::Mesh(const aiMesh* mesh)
 {
-    std::ifstream file(filePath);
+
     
-    if(!file.good())
-    {
-        std::cout << "what the fuc\n"<< "bad file: " << filePath << std::endl;
-        return;
-    }
-
-    Assimp::Importer importer;
-    const aiScene* scene = NULL;
-    unsigned int n = 0, t;
-
-    for(int k = 0; k < 1; k++)
-    {
-        scene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices);
-    }
-
     //this what indicates how many meshes are being imported. If I take in multiple in the same fbx will this process it?
-    const struct aiMesh* mesh = scene->mMeshes[meshNum];
+    std::cout << "bones in mesh: " << mesh->mNumBones << std::endl;
+    int t;
     for(t = 0; t < mesh->mNumVertices; ++t)
     {
         MeshData v;
@@ -63,6 +49,23 @@ Mesh::Mesh(std::string filePath, int meshNum)
     MakeMesh(m_vertices, m_indices);
 
 }
+void Mesh::LoadMeshBone(const aiMesh* mesh, int meshNum)
+{
+    for(int i = 0; i < mesh->mNumBones; i++)
+    {
+        const aiBone* bone = mesh->mBones[i];
+        std::cout << "bone name: " << bone->mName.C_Str() << std::endl;
+        std::cout << "bone num weights: " << bone->mNumWeights << std::endl;
+        std::cout << "bone num indices: " << bone->mNumWeights << std::endl;
+        LoadSingleBone(bone, meshNum);
+    }
+
+}
+
+void Mesh::LoadSingleBone(const aiBone* bone, int meshNum)
+{
+}
+
 void Mesh::MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices)
 {
     vertices = vertices;

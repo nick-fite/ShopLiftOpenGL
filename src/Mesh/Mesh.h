@@ -8,6 +8,11 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/LogStream.hpp>
 
 struct MeshData {
     glm::vec3 position;
@@ -22,7 +27,7 @@ struct MeshData {
 class Mesh {
 public:
     Mesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices);
-    Mesh(std::string filePath, int meshNum);
+    Mesh(const aiMesh* mesh);
     ~Mesh();
 private:
 void MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices);
@@ -31,6 +36,10 @@ void MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> indice
 
     GLuint m_vertextBuffer;
     GLuint m_indexBuffer;
+
+    void LoadMeshBone(const aiMesh* mesh, int meshNum);
+    void LoadSingleBone(const aiBone* bone, int meshNum);
+
 public:
     void DrawMesh();
 
