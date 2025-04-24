@@ -31,8 +31,12 @@
                            aiProcess_CalcTangentSpace)
 
 class Object {
+
 private:
+    typedef std::map<std::string, std::map<Mesh*, Material*>> meshMapType;
     //std::vector<Mesh*> meshes;
+    
+    meshMapType meshes;
     std::map<std::string, Mesh*> meshMap;
 public:
     Object(std::string filePath, std::string name, bool loadSkeleton = false);
