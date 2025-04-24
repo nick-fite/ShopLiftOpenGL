@@ -39,8 +39,7 @@ int main() {
 
     
     glewInit();
-    
-    Object* obj = new Object("../../assets/TestAssets/Models/TestPlayer.fbx", "TestPlayer");
+    Object* obj = new Object("../../assets/TestAssets/JawBreaker.fbx", "JawBreaker");
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
