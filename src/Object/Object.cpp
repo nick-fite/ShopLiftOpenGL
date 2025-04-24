@@ -19,7 +19,7 @@ Object::Object(std::string filePath, std::string name)
 
     for(int k = 0; k < 1; k++)
     {
-        scene = importer.ReadFile("../../assets/TestAssets/TestPlayer.fbx", aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices);
+        scene = importer.ReadFile("../../assets/TestAssets/JawBreaker.fbx", ASSIMP_LOAD_FLAGS);
     }
 
     if(scene)
@@ -31,11 +31,13 @@ Object::Object(std::string filePath, std::string name)
         std::cout << "FAILURE Scene not loaded" << std::endl;
     }
 
+    std::cout << "sceneName: " << scene->mName.data << std::endl;
+
     for(int i = 0; i < scene->mNumMeshes; i++)
     {
         std::string newName = name + "_" + char(i);
-        std::cout << newName << std::endl;
         meshMap.insert({newName, new Mesh(scene->mMeshes[i])});
+        std::cout << "i: " << i << std::endl;
     }
 }
 

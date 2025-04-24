@@ -34,26 +34,26 @@ void FPSController::Update(GLFWwindow* window, glm::vec2 viewportDimmensions, gl
 
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) 
     {
-        m_transform.Translate(m_transform.GetForward() * 50.f * deltaTime);
+        m_transform.Translate(m_transform.GetForward() * 5.f * deltaTime);
     }
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) 
     {
-        m_transform.Translate(m_transform.GetRight() * -50.f * deltaTime);
+        m_transform.Translate(m_transform.GetRight() * -5.f * deltaTime);
     }
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) 
     {
-        m_transform.Translate(m_transform.GetForward() * -50.f * deltaTime);
+        m_transform.Translate(m_transform.GetForward() * -5.f * deltaTime);
     }
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) 
     {
-        m_transform.Translate(m_transform.GetRight() * 50.f * deltaTime);
+        m_transform.Translate(m_transform.GetRight() * 5.f * deltaTime);
     }
     if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) 
     {
-        m_transform.Translate(glm::vec3(0.f,1.f,0.f) * 50.f * deltaTime);
+        m_transform.Translate(glm::vec3(0.f,1.f,0.f) * 5.f * deltaTime);
     }
     if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) 
     {
-        m_transform.Translate(glm::vec3(0.f,1.f,0.f) * -50.f * deltaTime);
+        m_transform.Translate(glm::vec3(0.f,1.f,0.f) * -5.f * deltaTime);
     }
 }

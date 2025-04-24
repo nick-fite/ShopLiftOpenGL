@@ -16,7 +16,7 @@ Mesh::Mesh(const aiMesh* mesh)
 
     
     //this what indicates how many meshes are being imported. If I take in multiple in the same fbx will this process it?
-    std::cout << "bones in mesh: " << mesh->mNumBones << std::endl;
+    std::cout << "meshName: " << mesh->mName.data << std::endl;
     int t;
     for(t = 0; t < mesh->mNumVertices; ++t)
     {
