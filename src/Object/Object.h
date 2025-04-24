@@ -38,9 +38,10 @@ private:
         Mesh* mesh;
         Material* material;
     };
+
+    std::vector<MeshInfo> Meshes;
     //std::vector<Mesh*> meshes;
     
-    meshInfo Meshes;
     std::map<std::string, Mesh*> meshMap;
 public:
     Object(std::string filePath, std::string name, bool loadSkeleton = false);
