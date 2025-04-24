@@ -39,7 +39,8 @@ int main() {
 
     
     glewInit();
-    Object* obj = new Object("../../assets/TestAssets/JawBreaker.fbx", "JawBreaker");
+    Object* obj = new Object("../../assets/TestAssets/testPlayer.fbx", "JawBreaker");
+    //Object* obj1 = new Object("../../assets/TestAssets/CandyStore_scene.fbx", "JawBreaker");
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
@@ -53,14 +54,14 @@ int main() {
     char worldMatrixVS[] = "worldMatrix";
     char textureFS[] = "tex";
 
-    char textureFile[] = "../../assets/TestAssets/Textures/Solid_Blue.png";
+    char textureFile[] = "../../assets/TestAssets/Textures/Solid_gray.png";
 
-    ShaderProgram* shaderProgram = new ShaderProgram();
-    shaderProgram->AttachShader(vertShader);
-    shaderProgram->AttachShader(fragShader);
+    //ShaderProgram* shaderProgram = new ShaderProgram();
+    //shaderProgram->AttachShader(vertShader);
+    //shaderProgram->AttachShader(fragShader);
 
-    Material* mat = new Material(shaderProgram);
-    mat->SetTexture(textureFS, new Texture(textureFile));
+    //Material* mat = new Material(shaderProgram);
+    //mat->SetTexture(textureFS, new Texture(textureFile));
     
     while(!glfwWindowShouldClose(window))
     {
@@ -77,19 +78,20 @@ int main() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.0,0.0,0.0, 0.0);
 
-        mat->SetMatrix(cameraViewVS, viewProjection);
-        mat->SetMatrix(worldMatrixVS, transform.GetMatrix());
+        //mat->SetMatrix(cameraViewVS, viewProjection);
+        //mat->SetMatrix(worldMatrixVS, transform.GetMatrix());
 
-        mat->Bind();
+        //mat->Bind();
 
         obj->DrawMeshes();
+        //obj1->DrawMeshes();
         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     
-    delete mat;
-    delete shaderProgram;
+    //delete mat;
+    //delete shaderProgram;
     delete vertShader;
     delete fragShader;
     delete obj;

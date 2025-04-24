@@ -11,7 +11,6 @@
                            aiProcess_LimitBoneWeights |         \
                            aiProcess_SplitLargeMeshes |         \
                            aiProcess_ImproveCacheLocality |     \
-                           aiProcess_RemoveRedundantMaterials | \
                            aiProcess_FindDegenerates |          \
                            aiProcess_FindInvalidData |          \
                            aiProcess_GenUVCoords |              \
@@ -34,9 +33,14 @@ class Object {
 
 private:
     typedef std::map<std::string, std::map<Mesh*, Material*>> meshMapType;
+    struct MeshInfo {
+        std::string name;
+        Mesh* mesh;
+        Material* material;
+    };
     //std::vector<Mesh*> meshes;
     
-    meshMapType meshes;
+    meshInfo Meshes;
     std::map<std::string, Mesh*> meshMap;
 public:
     Object(std::string filePath, std::string name, bool loadSkeleton = false);
