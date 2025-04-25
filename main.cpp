@@ -39,7 +39,7 @@ int main() {
 
     
     glewInit();
-    Object* obj = new Object("../../assets/TestAssets/testPlayer.fbx", "JawBreaker");
+    Object* obj = new Object("../../assets/TestAssets/SpaceGuy.fbx", "spaceguy");
     //Object* obj1 = new Object("../../assets/TestAssets/CandyStore_scene.fbx", "JawBreaker");
     
     Transform3D transform;
@@ -83,7 +83,7 @@ int main() {
 
         //mat->Bind();
 
-        obj->DrawMeshes();
+        obj->DrawMeshes(viewProjection, transform.GetMatrix());
         //obj1->DrawMeshes();
         
         glfwSwapBuffers(window);

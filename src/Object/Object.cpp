@@ -40,8 +40,15 @@ Object::Object(std::string filePath, std::string name, bool loadSkeleton)
 
     std::cout << "skeleton: " << scene->hasSkeletons() << std::endl;
 
+
+    ProcessNode(scene->mRootNode, scene);
+    int num = scene->mNumTextures;
+    std::cout << "scene textures: " << num;
+}
+void Object::ProcessNode(aiNode* node, const aiScene* scene)
+{
     
-    for(int i = 0; i < scene->mNumMeshes; i++)
+    for(unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         std::string newName = name + "_" + char(i);
         
@@ -49,51 +56,28 @@ Object::Object(std::string filePath, std::string name, bool loadSkeleton)
         int matIndex = assimpMesh->mMaterialIndex;
         aiMaterial* material = scene->mMaterials[matIndex];
         aiString textureFile;
-        for (int type = aiTextureType_NONE; type <= aiTextureType_UNKNOWN; ++type) {
+        material->GetTexture((aiTextureType)1, i, &textureFile);
+        
+        std::cout << "material name: " << material->GetName().C_Str() << std::endl;
+
+        for (int type = aiTextureType_NONE; type <= aiTextureType_UNKNOWN; type++) {
             unsigned int count = material->GetTextureCount((aiTextureType)type);
+    
+            for(int i = 0; i < count; i++)
+            {
+                aiString str;
+                material->GetTexture((aiTextureType)type, i, &str);
+
+                std::string path = str.C_Str();
+                std::cout << path << std::endl;
+                
+            }
+
+
             if (count > 0) {
                 std::cout << "Texture type " << type << " has " << count << " textures.\n";
             }
         }
-        //std::cout <<"Texture none: " << material->GetTextureCount(aiTextureType_NONE) << std::endl;
-        //std::cout <<"Texture diffuse: " << material->GetTextureCount(aiTextureType_DIFFUSE) << std::endl;
-        //std::cout <<"Texture specular: " << material->GetTextureCount(aiTextureType_SPECULAR) << std::endl;
-        //std::cout <<"Texture ambient: " << material->GetTextureCount(aiTextureType_AMBIENT) << std::endl;
-        //std::cout <<"Texture emissive: " << material->GetTextureCount(aiTextureType_EMISSIVE) << std::endl;
-        //std::cout <<"Texture height: " << material->GetTextureCount(aiTextureType_HEIGHT) << std::endl;
-        //std::cout <<"Texture normals: " << material->GetTextureCount(aiTextureType_NORMALS) << std::endl;
-        //std::cout <<"Texture shininess: " << material->GetTextureCount(aiTextureType_SHININESS) << std::endl;
-        //std::cout <<"Texture opacity: " << material->GetTextureCount(aiTextureType_OPACITY) << std::endl;
-        //std::cout <<"Texture displacement: " << material->GetTextureCount(aiTextureType_DISPLACEMENT) << std::endl;
-        //std::cout <<"Texture lightmap: " << material->GetTextureCount(aiTextureType_LIGHTMAP) << std::endl;
-        //std::cout <<"Texture reflection: " << material->GetTextureCount(aiTextureType_REFLECTION) << std::endl;
-        //std::cout <<"Texture basecolor: " << material->GetTextureCount(aiTextureType_BASE_COLOR) << std::endl;
-        //std::cout <<"Texture normal camera: " << material->GetTextureCount(aiTextureType_NORMAL_CAMERA) << std::endl;
-        //std::cout <<"Texture emission color: " << material->GetTextureCount(aiTextureType_EMISSION_COLOR) << std::endl;
-        //std::cout <<"Texture metalness: " << material->GetTextureCount(aiTextureType_METALNESS) << std::endl;
-        //std::cout <<"Texture roughness: " << material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS) << std::endl;
-        //std::cout <<"Texture ambient occlusion: " << material->GetTextureCount(aiTextureType_AMBIENT_OCCLUSION) << std::endl;
-        //std::cout <<"Texture unknown: " << material->GetTextureCount(aiTextureType_UNKNOWN) << std::endl;
-        //std::cout <<"Texture sheen: " << material->GetTextureCount(aiTextureType_SHEEN) << std::endl;
-        //std::cout <<"Texture clearcoat: " << material->GetTextureCount(aiTextureType_CLEARCOAT) << std::endl;
-        //std::cout <<"Texture transmission: " << material->GetTextureCount(aiTextureType_TRANSMISSION) << std::endl;
-        //std::cout <<"Texture maya base: " << material->GetTextureCount(aiTextureType_MAYA_BASE) << std::endl;
-        //std::cout <<"Texture maya specular: " << material->GetTextureCount(aiTextureType_MAYA_SPECULAR) << std::endl;
-        //std::cout <<"Texture maya specular color: " << material->GetTextureCount(aiTextureType_MAYA_SPECULAR_COLOR) << std::endl;
-        //std::cout <<"Texture maya specular roughness: " << material->GetTextureCount(aiTextureType_MAYA_SPECULAR_ROUGHNESS) << std::endl;
-     
-     
-     
-     
-     
-
-        material->Get(AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0), textureFile);
-        
-        if(const aiTexture* texture = scene->GetEmbeddedTexture(textureFile.C_Str()))
-        {
-            std::cout << "textures found" << std::endl;
-        }
-
 
         //sets up material
         Shader* vertShader = new Shader("../../assets/Shaders/Vertex.glsl", GL_VERTEX_SHADER);
@@ -104,15 +88,23 @@ Object::Object(std::string filePath, std::string name, bool loadSkeleton)
         shaderProgram->AttachShader(vertShader);
         shaderProgram->AttachShader(fragShader);
         Material* mat = new Material(shaderProgram);
-        
 
-        mat->SetTexture(textureFS, new Texture(textureFile.data));
+        std::cout << "texture: " << textureFile.data << std::endl;
+        Texture* tex = new Texture(textureFile.data);
+        tex->GetGLTexture();
+        mat->SetTexture(textureFS, tex);
         
         Mesh* newMesh = new Mesh(assimpMesh);
-        Meshes.push_back({name + "_" + std::to_string(i), newMesh, mat});
-        //Meshes.insert({newName, newMesh, material});
-        //meshMap.insert({newName, newMesh});
-        
+        MeshInfo newMeshInfo;
+        newMeshInfo.name = "name";
+        newMeshInfo.mesh = newMesh;
+        newMeshInfo.material = mat;
+        Meshes.push_back(newMeshInfo);
+    }
+    
+    for(unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        ProcessNode(node->mChildren[i], scene);
     }
 }
 
@@ -125,10 +117,13 @@ Object::~Object()
     }
 
 }
-void Object::DrawMeshes()
+void Object::DrawMeshes(glm::mat4 viewProjection, glm::mat4 transformMatrix)
 {
     for(int i = 0; i < Meshes.size(); i++)
     {
+        //std::cout << "drawing: " << Meshes[i].name << std::endl;
+        Meshes[i].material->SetMatrix("cameraView", viewProjection);
+        Meshes[i].material->SetMatrix("worldMatrix", transformMatrix);
         Meshes[i].material->Bind();
         Meshes[i].mesh->DrawMesh();
         Meshes[i].material->UnBind();

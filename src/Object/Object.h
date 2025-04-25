@@ -41,10 +41,12 @@ private:
 
     std::vector<MeshInfo> Meshes;
     //std::vector<Mesh*> meshes;
+
+    void ProcessNode(aiNode* node, const aiScene* scene);
 public:
     Object(std::string filePath, std::string name, bool loadSkeleton = false);
     ~Object();
     std::string name;
 
-    void DrawMeshes();
+    void DrawMeshes(glm::mat4 viewProjection, glm::mat4 transformMatrix);
 };
