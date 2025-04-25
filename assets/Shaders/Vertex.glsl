@@ -1,4 +1,4 @@
-/*#version 400 core
+#version 400 core
 
 // Vertex attribute for position
 layout(location = 0) in vec3 in_position;
@@ -23,45 +23,47 @@ void main(void)
 	gl_Position = viewPosition;
 	normal = mat3(worldMatrix) * in_normal;
 	uv = in_uv;
-}*/
-
-
-#version 330 core
-
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoords;
-layout (location = 3) in vec3 aTangent;
-layout (location = 4) in vec3 aBitangent;
-
-out vec2 TexCoords;
-out vec3 FragPosTangent;
-out vec3 LightDirTangent;
-out vec3 ViewDirTangent;
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-uniform vec3 viewPos;
-uniform vec3 lightDir; // World space
-
-void main()
-{
-    // Transform position to world space
-    vec3 FragPos = vec3(model * vec4(aPos, 1.0));
-
-    // Calculate TBN matrix
-    vec3 T = normalize(mat3(model) * aTangent);
-    vec3 B = normalize(mat3(model) * aBitangent);
-    vec3 N = normalize(mat3(model) * aNormal);
-    mat3 TBN = transpose(mat3(T, B, N)); // world to tangent
-
-    // Convert to tangent space
-    FragPosTangent = TBN * FragPos;
-    ViewDirTangent = TBN * viewPos;
-    LightDirTangent = TBN * -lightDir;
-
-    TexCoords = aTexCoords;
-    gl_Position = projection * view * vec4(FragPos, 1.0);
 }
+
+/*#version 400 core
+
+// Vertex attributes
+layout(location = 0) in vec3 in_position;
+layout(location = 1) in vec2 in_uv;
+layout(location = 2) in vec3 in_normal;
+layout(location = 3) in vec3 in_tangent;  // Tangent vector for normal mapping
+
+// Uniforms for transformations
+uniform mat4 worldMatrix;
+uniform mat4 cameraView;
+
+// Outputs to fragment shader
+out vec2 uv;
+out vec3 normal;
+out vec3 fragPos;      // Fragment position in world space
+out mat3 TBN;          // Tangent-Bitangent-Normal matrix for normal mapping
+
+void main(void)
+{
+    // Transform the vertex position
+    vec4 worldPosition = worldMatrix * vec4(in_position, 1.0);
+    fragPos = worldPosition.xyz;  // Pass world position to fragment shader
+    
+    // Final position
+    gl_Position = cameraView * worldPosition;
+    
+    // Transform normal to world space
+    normal = normalize(mat3(worldMatrix) * in_normal);
+    
+    // Calculate TBN matrix for normal mapping
+    vec3 T = normalize(mat3(worldMatrix) * in_tangent);
+    // Re-orthogonalize T with respect to N
+    T = normalize(T - dot(T, normal) * normal);
+    vec3 B = cross(normal, T);  // Create bitangent
+    
+    // Output TBN matrix
+    TBN = mat3(T, B, normal);
+    
+    // Pass texture coordinates
+    uv = in_uv;
+}*/

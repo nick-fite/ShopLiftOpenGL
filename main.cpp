@@ -39,29 +39,12 @@ int main() {
 
     
     glewInit();
-    Object* obj = new Object("../../assets/TestAssets/SpaceGuy.fbx", "spaceguy");
-    //Object* obj1 = new Object("../../assets/TestAssets/CandyStore_scene.fbx", "JawBreaker");
+    Object* obj = new Object("../../assets/TestAssets/passive_marker_man.fbx", "spaceguy", true);
     
     Transform3D transform;
     transform.SetPosition(glm::vec3(0,0,-2));
 
     FPSController controller = FPSController();
-
-    Shader* vertShader = new Shader("../../assets/Shaders/Vertex.glsl", GL_VERTEX_SHADER);
-    Shader* fragShader = new Shader("../../assets/Shaders/Fragment.glsl", GL_FRAGMENT_SHADER);
-    
-    char cameraViewVS[] = "cameraView";
-    char worldMatrixVS[] = "worldMatrix";
-    char textureFS[] = "tex";
-
-    char textureFile[] = "../../assets/TestAssets/Textures/Solid_gray.png";
-
-    //ShaderProgram* shaderProgram = new ShaderProgram();
-    //shaderProgram->AttachShader(vertShader);
-    //shaderProgram->AttachShader(fragShader);
-
-    //Material* mat = new Material(shaderProgram);
-    //mat->SetTexture(textureFS, new Texture(textureFile));
     
     while(!glfwWindowShouldClose(window))
     {
@@ -78,22 +61,12 @@ int main() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.0,0.0,0.0, 0.0);
 
-        //mat->SetMatrix(cameraViewVS, viewProjection);
-        //mat->SetMatrix(worldMatrixVS, transform.GetMatrix());
-
-        //mat->Bind();
-
         obj->DrawMeshes(viewProjection, transform.GetMatrix());
-        //obj1->DrawMeshes();
         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     
-    //delete mat;
-    //delete shaderProgram;
-    delete vertShader;
-    delete fragShader;
     delete obj;
     glfwTerminate();
 

@@ -4,6 +4,8 @@
 #include <assimp/scene.h>
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/LogStream.hpp>
+#include <filesystem>
+
 Object::Object(std::string filePath, std::string name, bool loadSkeleton)
 {
     std::ifstream file(filePath);
@@ -25,40 +27,36 @@ Object::Object(std::string filePath, std::string name, bool loadSkeleton)
         }
         else
         {
-            scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_ValidateDataStructure);
+            scene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality | aiProcess_PreTransformVertices);
         }
     }
 
-    if(scene)
-    {
-        std::cout << "Scene loaded" << std::endl;
-    }
-    else
-    {
-        std::cout << "FAILURE Scene not loaded" << std::endl;
-    }
-
-    std::cout << "skeleton: " << scene->hasSkeletons() << std::endl;
-
-
-    ProcessNode(scene->mRootNode, scene);
+    ProcessNode(scene->mRootNode, scene, filePath);
     int num = scene->mNumTextures;
     std::cout << "scene textures: " << num;
 }
-void Object::ProcessNode(aiNode* node, const aiScene* scene)
+void Object::ProcessNode(aiNode* node, const aiScene* scene, std::string filePath)
 {
+    //std::filesystem::path modelPath(filePath);
+    //std::filesystem::path modelDir = modelPath.parent_path();
     
-    for(unsigned int i = 0; i < node->mNumMeshes; i++)
+    for(unsigned int i = 0; i < scene->mNumMeshes; i++)
     {
         std::string newName = name + "_" + char(i);
         
         aiMesh* assimpMesh = scene->mMeshes[i];
         int matIndex = assimpMesh->mMaterialIndex;
         aiMaterial* material = scene->mMaterials[matIndex];
-        aiString textureFile;
-        material->GetTexture((aiTextureType)1, i, &textureFile);
-        
-        std::cout << "material name: " << material->GetName().C_Str() << std::endl;
+        //aiString diffuseFile;
+        //aiString specularFile;
+        //aiString normalFile;
+
+        //get's relative texture path
+        //material->GetTexture((aiTextureType)1, 0, &diffuseFile);
+        //material->GetTexture((aiTextureType)2, 0, &specularFile);
+        //material->GetTexture((aiTextureType)6, 0, &normalFile);        
+
+        //std::cout << "material name: " << diffuseFile.data << std::endl;
 
         for (int type = aiTextureType_NONE; type <= aiTextureType_UNKNOWN; type++) {
             unsigned int count = material->GetTextureCount((aiTextureType)type);
@@ -68,14 +66,14 @@ void Object::ProcessNode(aiNode* node, const aiScene* scene)
                 aiString str;
                 material->GetTexture((aiTextureType)type, i, &str);
 
-                std::string path = str.C_Str();
-                std::cout << path << std::endl;
+                //std::string path = str.C_Str();
+                //std::cout << path << std::endl;
                 
             }
 
 
             if (count > 0) {
-                std::cout << "Texture type " << type << " has " << count << " textures.\n";
+                //std::cout << "Texture type " << type << " has " << count << " textures.\n";
             }
         }
 
@@ -88,11 +86,26 @@ void Object::ProcessNode(aiNode* node, const aiScene* scene)
         shaderProgram->AttachShader(vertShader);
         shaderProgram->AttachShader(fragShader);
         Material* mat = new Material(shaderProgram);
+        
+        if(scene->mNumTextures > 0)
+        {
+            Texture* texDiffuse = CreateTextureFromEmbedded(scene->mTextures[0]);
+            //Texture* texNormal = CreateTextureFromEmbedded(scene->mTextures[1]);
+            //Texture* texSpecular = CreateTextureFromEmbedded(scene->mTextures[2]);
+            mat->SetTexture("tex", texDiffuse);
+            //mat->SetTexture("texSpecular", texSpecular);
+            //mat->SetTexture("texNormal", texNormal);
+        }
+        else 
+        {
+            Texture* texDiffuse = new Texture("../../assets/TestAssets/Textures/Solid_gray.png");
+            //Texture* texNormal = new Texture("../../assets/TestAssets/Textures/Solid_gray.png");
+            //Texture* texSpecular = new Texture("../../assets/TestAssets/Textures/Solid_gray.png");
+            mat->SetTexture("tex", texDiffuse);
+            //mat->SetTexture("texSpecular", texSpecular);
+            //mat->SetTexture("texNormal", texNormal);
+        }
 
-        std::cout << "texture: " << textureFile.data << std::endl;
-        Texture* tex = new Texture(textureFile.data);
-        tex->GetGLTexture();
-        mat->SetTexture(textureFS, tex);
         
         Mesh* newMesh = new Mesh(assimpMesh);
         MeshInfo newMeshInfo;
@@ -102,10 +115,10 @@ void Object::ProcessNode(aiNode* node, const aiScene* scene)
         Meshes.push_back(newMeshInfo);
     }
     
-    for(unsigned int i = 0; i < node->mNumChildren; i++)
-    {
-        ProcessNode(node->mChildren[i], scene);
-    }
+    //for(unsigned int i = 0; i < node->mNumChildren; i++)
+   // {
+   //     ProcessNode(node->mChildren[i], scene, filePath);
+    //}
 }
 
 Object::~Object()
