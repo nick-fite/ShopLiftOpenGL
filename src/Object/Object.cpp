@@ -50,41 +50,14 @@ void Object::ProcessNode(aiNode* node, const aiScene* scene, std::string filePat
         aiMesh* assimpMesh = scene->mMeshes[i];
         int matIndex = assimpMesh->mMaterialIndex;
         aiMaterial* material = scene->mMaterials[matIndex];
-        //aiString diffuseFile;
-        //aiString specularFile;
-        //aiString normalFile;
+        aiString diffuseFile;
+        aiString specularFile;
+        aiString normalFile;
 
-        //get's relative texture path
-        //material->GetTexture((aiTextureType)1, 0, &diffuseFile);
-        //material->GetTexture((aiTextureType)2, 0, &specularFile);
-        //material->GetTexture((aiTextureType)6, 0, &normalFile);        
-
-        //std::cout << "material name: " << diffuseFile.data << std::endl;
-
-        for (int type = aiTextureType_NONE; type <= aiTextureType_UNKNOWN; type++) {
-            unsigned int count = material->GetTextureCount((aiTextureType)type);
-    
-            for(int i = 0; i < count; i++)
-            {
-                aiString str;
-                material->GetTexture((aiTextureType)type, i, &str);
-
-                //std::string path = str.C_Str();
-                //std::cout << path << std::endl;
-                
-            }
-
-
-            if (count > 0) {
-                //std::cout << "Texture type " << type << " has " << count << " textures.\n";
-            }
-        }
 
         //sets up material
         Shader* vertShader = new Shader("../../assets/Shaders/Vertex.glsl", GL_VERTEX_SHADER);
         Shader* fragShader = new Shader("../../assets/Shaders/Fragment.glsl", GL_FRAGMENT_SHADER);
-        char textureFS[] = "tex";
-        
         ShaderProgram* shaderProgram = new ShaderProgram();
         shaderProgram->AttachShader(vertShader);
         shaderProgram->AttachShader(fragShader);
@@ -92,26 +65,22 @@ void Object::ProcessNode(aiNode* node, const aiScene* scene, std::string filePat
         
         if(scene->mNumTextures > 0)
         {
-            //std::cout << "texture num: " << scene->mNumTextures << std::endl;
             for(int j = 0; j < scene->mNumTextures; j++)
             {
                 std::string textureName = scene->mTextures[j]->mFilename.C_Str();
-                
+                std::cout << "texture name: " << textureName << std::endl;
                 if(textureName.find("diffuse") != std::string::npos)
                 {
-                    std::cout << "diffuse texture: " << textureName << std::endl;
                     Texture* tex = CreateTextureFromEmbedded(scene->mTextures[j]);
                     mat->SetTexture("texDiffuse", tex);
                 }
                 else if(textureName.find("specular") != std::string::npos)
                 {
-                    std::cout << "specular texture: " << textureName << std::endl;
                     Texture* tex = CreateTextureFromEmbedded(scene->mTextures[j]);
                     mat->SetTexture("texSpecular", tex);
                 }
                 else if(textureName.find("normal") != std::string::npos)
                 {
-                    std::cout << "normal texture: " << textureName << std::endl;
                     Texture* tex = CreateTextureFromEmbedded(scene->mTextures[j]);
                     mat->SetTexture("texNormal", tex);
                 }
@@ -125,6 +94,7 @@ void Object::ProcessNode(aiNode* node, const aiScene* scene, std::string filePat
         }
         else 
         {
+            std::cout << "no textures found" << std::endl;
             Texture* tex = new Texture("../../assets/TestAssets/Textures/Solid_gray.png");
             mat->SetTexture("texDiffuse", tex);
             mat->SetTexture("texSpecular", tex);

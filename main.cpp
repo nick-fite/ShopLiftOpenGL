@@ -39,11 +39,11 @@ int main() {
 
     
     glewInit();
-    Object* obj = new Object("../../assets/TestAssets/passive_marker_man.fbx", "spaceguy", true);
+    Object* obj = new Object("../../assets/TestAssets/mixamoVampire.fbx", "spaceguy");
     
-    Transform3D transform;
-    transform.SetPosition(glm::vec3(0,0,-2));
-
+    Transform3D MapTransform;
+    MapTransform.SetPosition(glm::vec3(0,0,0));
+    
     FPSController controller = FPSController();
     
     while(!glfwWindowShouldClose(window))
@@ -61,13 +61,15 @@ int main() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.0,0.0,0.0, 0.0);
 
-        obj->DrawMeshes(viewProjection, transform.GetMatrix(), controller.GetTransform().getPosition());
+        obj->DrawMeshes(viewProjection, MapTransform.GetMatrix(), controller.GetTransform().getPosition());
         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     
     delete obj;
+    //delete obj2;
+    //delete player;
     glfwTerminate();
 
     return 1;

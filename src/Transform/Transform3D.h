@@ -38,7 +38,7 @@ public:
 
     void SetScale(float scale) {
         this->scale = scale;
-        matrixDirty = true;
+        matrixDirty = inverseDirty = true;
     };
 
     void SetPosition(glm::vec3 pos) {

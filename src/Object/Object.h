@@ -28,7 +28,8 @@
                            aiProcess_FindDegenerates |          \
                            aiProcess_FindInvalidData |          \
                            aiProcess_GenUVCoords |              \
-                           aiProcess_CalcTangentSpace)
+                           aiProcess_CalcTangentSpace|          \
+                           aiProcess_PreTransformVertices)
 
 class Object {
 
@@ -45,7 +46,7 @@ private:
 
     void ProcessNode(aiNode* node, const aiScene* scene, std::string filePath);
 
-    Texture* CreateTextureFromEmbedded(const aiTexture* embeddedTexture) {
+Texture* CreateTextureFromEmbedded(const aiTexture* embeddedTexture) {
     // Check if the texture is compressed (stored in a format like PNG, JPG)
     if (embeddedTexture->mHeight == 0) {
         // Compressed texture - data is stored as a blob in mData
@@ -98,7 +99,7 @@ private:
     {
         for(int i = 0; i < node->mNumChildren; i++)
         {
-            std::cout << "Node name: " << node->mChildren[i]->mName.C_Str() << std::endl;
+            //std::cout << "Node name: " << node->mChildren[i]->mName.C_Str() << std::endl;
             NodeRecurssive(node->mChildren[i]);
         }
     }

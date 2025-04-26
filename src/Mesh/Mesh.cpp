@@ -20,7 +20,14 @@ Mesh::Mesh(const aiMesh* mesh)
         MeshData v;
         memcpy(&v.position, &mesh->mVertices[t], sizeof(glm::vec3));
         memcpy(&v.normal, &mesh->mNormals[t], sizeof(glm::vec3));
-        memcpy(&v.texCoords, &mesh->mTextureCoords[0][t], sizeof(glm::vec2));
+        if (mesh->mTextureCoords[0]) {
+            //std::cout<< "Texture coordinates found for vertex " << t << std::endl;
+            memcpy(&v.texCoords, &mesh->mTextureCoords[0][t], sizeof(glm::vec2));
+        } else {
+            //std::cout << "No texture coordinates found for vertex " << t << std::endl;
+            v.texCoords = glm::vec2(0.0f, 0.0f); // Default value
+        }
+        
 
         m_vertices.push_back(v);
     }
