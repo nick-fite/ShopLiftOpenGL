@@ -1,4 +1,4 @@
-#version 400 core
+/*#version 400 core
 
 in vec2 uv;
 in vec3 normal;
@@ -19,9 +19,9 @@ void main(void)
 
 	// finally, sample from the texuture and multiply in the light.
 	gl_FragColor = texture(tex, uv) * lightValue;
-}
+}*/
 
-/*#version 400 core
+#version 400 core
 
 in vec2 uv;
 in vec3 normal;
@@ -71,4 +71,4 @@ void main(void)
     
     // Final color combines diffuse texture with diffuse lighting and adds specular
     gl_FragColor = (diffuseColor * lightValue) + specValue;
-}*/
+}

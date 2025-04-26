@@ -18,6 +18,7 @@ struct MeshData {
     glm::vec3 position;
     glm::vec2 texCoords;
     glm::vec3 normal;
+    glm::vec3 tangent;
 
     MeshData(glm::vec3 pos, glm::vec2 tex, glm::vec3 norm)
         : position(pos), texCoords(tex), normal(norm) {}
@@ -37,9 +38,7 @@ void MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> indice
     GLuint m_vertextBuffer;
     GLuint m_indexBuffer;
 
-    void LoadMeshBone(const aiMesh* mesh, int meshNum);
-    void LoadSingleBone(const aiBone* bone, int meshNum);
-
+    void CalculateTangentSpace(std::vector<MeshData>& vertices, std::vector<unsigned short>& indices);
 public:
     void DrawMesh();
 

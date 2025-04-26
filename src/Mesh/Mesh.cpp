@@ -13,10 +13,7 @@ Mesh::Mesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices)
 
 Mesh::Mesh(const aiMesh* mesh)
 {
-    //this what indicates how many meshes are being imported. If I take in multiple in the same fbx will this process it?
     std::cout << "meshName: " << mesh->mName.data << std::endl;
-    std::cout << "bones: " << mesh->mNumBones << std::endl;
-    //std::cout << "material: " << mesh->mMaterialIndex << std::endl;
     int t;
     for(t = 0; t < mesh->mNumVertices; ++t)
     {
@@ -49,27 +46,13 @@ Mesh::Mesh(const aiMesh* mesh)
     MakeMesh(m_vertices, m_indices);
 
 }
-void Mesh::LoadMeshBone(const aiMesh* mesh, int meshNum)
-{
-    for(int i = 0; i < mesh->mNumBones; i++)
-    {
-        const aiBone* bone = mesh->mBones[i];
-        std::cout << "bone name: " << bone->mName.C_Str() << std::endl;
-        std::cout << "bone num weights: " << bone->mNumWeights << std::endl;
-        std::cout << "bone num indices: " << bone->mNumWeights << std::endl;
-        LoadSingleBone(bone, meshNum);
-    }
-
-}
-
-void Mesh::LoadSingleBone(const aiBone* bone, int meshNum)
-{
-}
 
 void Mesh::MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> indices)
 {
     vertices = vertices;
     indices = indices;
+
+    CalculateTangentSpace(vertices, indices);
 
     //vertex buffer
     glGenBuffers(1, &m_vertextBuffer);
@@ -81,7 +64,6 @@ void Mesh::MakeMesh(std::vector<MeshData> vertices, std::vector<unsigned short> 
     glBindBuffer(GL_ARRAY_BUFFER, m_indexBuffer);
     glBufferData(GL_ARRAY_BUFFER, m_indices.size() * sizeof(unsigned short), &m_indices[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 }
 
 Mesh::~Mesh() 
@@ -103,9 +85,10 @@ void Mesh::DrawMesh()
     SetupAttribute(0,3,GL_FLOAT, MeshData, position);
     SetupAttribute(1,2,GL_FLOAT, MeshData, texCoords);
     SetupAttribute(2,3,GL_FLOAT, MeshData, normal);
+    SetupAttribute(3,3, GL_FLOAT, MeshData, tangent);
 
     //turn on attribute
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 4; i++)
     {
         glEnableVertexAttribArray(i);
     }
@@ -123,4 +106,35 @@ void Mesh::DrawMesh()
         glDisableVertexAttribArray(i);
     }
 
+}
+    
+void Mesh::CalculateTangentSpace(std::vector<MeshData>& vertices, std::vector<unsigned short>& indices)
+{
+    for (size_t i = 0; i < indices.size(); i += 3) {
+        MeshData& v0 = vertices[indices[i]];
+        MeshData& v1 = vertices[indices[i + 1]];
+        MeshData& v2 = vertices[indices[i + 2]];
+
+        // Edges of the triangle
+        glm::vec3 edge1 = v1.position - v0.position;
+        glm::vec3 edge2 = v2.position - v0.position;
+
+        // Texture coordinate differences
+        glm::vec2 deltaUV1 = v1.texCoords - v0.texCoords;
+        glm::vec2 deltaUV2 = v2.texCoords - v0.texCoords;
+
+        float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+        // Calculate tangent
+        glm::vec3 tangent;
+        tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+        tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+        tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+        tangent = glm::normalize(tangent);
+
+        // Assign to vertices
+        v0.tangent = tangent;
+        v1.tangent = tangent;
+        v2.tangent = tangent;
+    }
 }

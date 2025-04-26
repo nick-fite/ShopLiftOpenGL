@@ -88,11 +88,25 @@ private:
     return nullptr; // Return nullptr if texture creation failed
 }
 
+    void SceneNodeNames(const aiScene* scene)
+    {
+        std::cout << std::endl;
+        NodeRecurssive(scene->mRootNode);
+    }
+
+    void NodeRecurssive(aiNode* node)
+    {
+        for(int i = 0; i < node->mNumChildren; i++)
+        {
+            std::cout << "Node name: " << node->mChildren[i]->mName.C_Str() << std::endl;
+            NodeRecurssive(node->mChildren[i]);
+        }
+    }
 
 public:
     Object(std::string filePath, std::string name, bool loadSkeleton = false);
     ~Object();
     std::string name;
 
-    void DrawMeshes(glm::mat4 viewProjection, glm::mat4 transformMatrix);
+    void DrawMeshes(glm::mat4 viewProjection, glm::mat4 transformMatrix, glm::vec3 cameraPos);
 };

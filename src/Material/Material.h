@@ -18,6 +18,9 @@ public:
     ~Material();
     void SetTexture(char* name, Texture* texture);
     void SetMatrix(char* name, glm::mat4 matrix);
+    ShaderProgram* GetShaderProgram() {
+        return m_shaderProgram;
+    }
 
     void Bind();
     void UnBind();

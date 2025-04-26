@@ -34,7 +34,10 @@ Object::Object(std::string filePath, std::string name, bool loadSkeleton)
     ProcessNode(scene->mRootNode, scene, filePath);
     int num = scene->mNumTextures;
     std::cout << "scene textures: " << num;
+
+    SceneNodeNames(scene);
 }
+
 void Object::ProcessNode(aiNode* node, const aiScene* scene, std::string filePath)
 {
     //std::filesystem::path modelPath(filePath);
@@ -89,21 +92,43 @@ void Object::ProcessNode(aiNode* node, const aiScene* scene, std::string filePat
         
         if(scene->mNumTextures > 0)
         {
-            Texture* texDiffuse = CreateTextureFromEmbedded(scene->mTextures[0]);
-            //Texture* texNormal = CreateTextureFromEmbedded(scene->mTextures[1]);
-            //Texture* texSpecular = CreateTextureFromEmbedded(scene->mTextures[2]);
-            mat->SetTexture("tex", texDiffuse);
-            //mat->SetTexture("texSpecular", texSpecular);
-            //mat->SetTexture("texNormal", texNormal);
+            //std::cout << "texture num: " << scene->mNumTextures << std::endl;
+            for(int j = 0; j < scene->mNumTextures; j++)
+            {
+                std::string textureName = scene->mTextures[j]->mFilename.C_Str();
+                
+                if(textureName.find("diffuse") != std::string::npos)
+                {
+                    std::cout << "diffuse texture: " << textureName << std::endl;
+                    Texture* tex = CreateTextureFromEmbedded(scene->mTextures[j]);
+                    mat->SetTexture("texDiffuse", tex);
+                }
+                else if(textureName.find("specular") != std::string::npos)
+                {
+                    std::cout << "specular texture: " << textureName << std::endl;
+                    Texture* tex = CreateTextureFromEmbedded(scene->mTextures[j]);
+                    mat->SetTexture("texSpecular", tex);
+                }
+                else if(textureName.find("normal") != std::string::npos)
+                {
+                    std::cout << "normal texture: " << textureName << std::endl;
+                    Texture* tex = CreateTextureFromEmbedded(scene->mTextures[j]);
+                    mat->SetTexture("texNormal", tex);
+                }
+                else if(textureName.find("height") != std::string::npos)
+                {
+                    std::cout << "height texture: " << textureName << std::endl;
+                }
+                
+                
+            }
         }
         else 
         {
-            Texture* texDiffuse = new Texture("../../assets/TestAssets/Textures/Solid_gray.png");
-            //Texture* texNormal = new Texture("../../assets/TestAssets/Textures/Solid_gray.png");
-            //Texture* texSpecular = new Texture("../../assets/TestAssets/Textures/Solid_gray.png");
-            mat->SetTexture("tex", texDiffuse);
-            //mat->SetTexture("texSpecular", texSpecular);
-            //mat->SetTexture("texNormal", texNormal);
+            Texture* tex = new Texture("../../assets/TestAssets/Textures/Solid_gray.png");
+            mat->SetTexture("texDiffuse", tex);
+            mat->SetTexture("texSpecular", tex);
+            mat->SetTexture("texNormal", tex);
         }
 
         
@@ -114,11 +139,6 @@ void Object::ProcessNode(aiNode* node, const aiScene* scene, std::string filePat
         newMeshInfo.material = mat;
         Meshes.push_back(newMeshInfo);
     }
-    
-    //for(unsigned int i = 0; i < node->mNumChildren; i++)
-   // {
-   //     ProcessNode(node->mChildren[i], scene, filePath);
-    //}
 }
 
 Object::~Object()
@@ -130,13 +150,20 @@ Object::~Object()
     }
 
 }
-void Object::DrawMeshes(glm::mat4 viewProjection, glm::mat4 transformMatrix)
+void Object::DrawMeshes(glm::mat4 viewProjection, glm::mat4 transformMatrix, glm::vec3 cameraPos)
 {
     for(int i = 0; i < Meshes.size(); i++)
     {
         //std::cout << "drawing: " << Meshes[i].name << std::endl;
         Meshes[i].material->SetMatrix("cameraView", viewProjection);
         Meshes[i].material->SetMatrix("worldMatrix", transformMatrix);
+
+        GLuint shaderProgram = Meshes[i].material->GetShaderProgram()->GetGLShaderProgram();
+        GLint viewPosLocation = glGetUniformLocation(shaderProgram, "viewPos");
+        if (viewPosLocation != -1) {
+            glUniform3fv(viewPosLocation, 1, &cameraPos[0]);
+        }
+
         Meshes[i].material->Bind();
         Meshes[i].mesh->DrawMesh();
         Meshes[i].material->UnBind();

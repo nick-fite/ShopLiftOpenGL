@@ -61,7 +61,7 @@ int main() {
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.0,0.0,0.0, 0.0);
 
-        obj->DrawMeshes(viewProjection, transform.GetMatrix());
+        obj->DrawMeshes(viewProjection, transform.GetMatrix(), controller.GetTransform().getPosition());
         
         glfwSwapBuffers(window);
         glfwPollEvents();

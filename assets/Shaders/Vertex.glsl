@@ -1,4 +1,4 @@
-#version 400 core
+/*#version 400 core
 
 // Vertex attribute for position
 layout(location = 0) in vec3 in_position;
@@ -23,9 +23,9 @@ void main(void)
 	gl_Position = viewPosition;
 	normal = mat3(worldMatrix) * in_normal;
 	uv = in_uv;
-}
+}*/
 
-/*#version 400 core
+#version 400 core
 
 // Vertex attributes
 layout(location = 0) in vec3 in_position;
@@ -66,4 +66,4 @@ void main(void)
     
     // Pass texture coordinates
     uv = in_uv;
-}*/
+}
