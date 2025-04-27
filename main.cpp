@@ -1,12 +1,14 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include "src/Object/Object.h"
+//#include "src/Object/Object.h"
 #include "src/Transform/Transform3D.h"
 #include "src/Shaders/Shader.h"
 #include "src/Shaders/ShadersProgram/ShadersProgram.h"
 #include "src/Controllers/FPSController.h"
 #include "src/Material/Material.h"
+#include "src/Animation/Animator/Animator.h"
+//#include "src/Animation/Animation.h"
 #include <vector>
 #include <iostream>
     
@@ -39,8 +41,12 @@ int main() {
 
     
     glewInit();
-    Object* obj = new Object("../../assets/TestAssets/mixamoVampire.fbx", "spaceguy");
     
+    Object* obj = new Object("../../assets/TestAssets/VampireDance.fbx", "spaceguy", true);
+    std::cout << std::endl << std::endl << "attempting anim" << std::endl;
+    Animation* danceAnim = new Animation("../../assets/TestAssets/VampireDance.fbx", obj);
+    Animator* animator = new Animator(danceAnim);
+
     Transform3D MapTransform;
     MapTransform.SetPosition(glm::vec3(0,0,0));
     
@@ -59,7 +65,14 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.0,0.0,0.0, 0.0);
+        glClearColor(0.05,0.05,0.05, 1.0);
+
+        //auto transform = animator->GetFinalBoneMatrices();
+        //for(int i = 0; i < transform.size(); ++i)
+       // {
+            //obj->SetBoneTransform(i, transform[i]);
+        //}
+
 
         obj->DrawMeshes(viewProjection, MapTransform.GetMatrix(), controller.GetTransform().getPosition());
         
@@ -68,6 +81,8 @@ int main() {
     }
     
     delete obj;
+    //delete animator;
+    //delete danceAnim;
     //delete obj2;
     //delete player;
     glfwTerminate();
