@@ -8,6 +8,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <iostream>
 
 
 struct RenderTexture 
@@ -122,7 +123,7 @@ struct TexturesDB
     }
 };
 
-class RenderMesh 
+class RenderMesh
 {
 public:
     TextureHandle diffuse;
@@ -277,6 +278,7 @@ out vec4 _Color;
 
 void main()
 {
+    //view_position = vec3(0.0f, 0.0f, 0.0f);
     if (v_Highlight == 1)
     {
         _Color = vec4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -343,7 +345,75 @@ void main()
         return model;
     }
 
-    void draw(std::span<const glm::mat4> transforms, glm::mat4 projection, glm::mat4 view, glm::mat4 model, glm::vec3 lightPos, glm::vec3 viewPos)
+void printDrawInputs(std::span<const glm::mat4> transforms, glm::mat4 projection, glm::mat4 view, 
+                    glm::mat4 model, glm::vec3 lightPos, glm::vec3 viewPos)
+{
+    std::cout << "===== DRAW FUNCTION INPUTS =====" << std::endl;
+    
+    // Print transforms array summary
+    std::cout << "Transforms: " << transforms.size() << " matrices" << std::endl;
+    if (transforms.size() > 0) {
+        std::cout << "First transform[0]:" << std::endl;
+        for (int i = 0; i < 4; i++) {
+            std::cout << "  [";
+            for (int j = 0; j < 4; j++) {
+                std::cout << transforms[0][i][j] << (j < 3 ? ", " : "");
+            }
+            std::cout << "]" << std::endl;
+        }
+    }
+    
+    // Print matrices
+    std::cout << "Projection Matrix:" << std::endl;
+    for (int i = 0; i < 4; i++) {
+        std::cout << "  [";
+        for (int j = 0; j < 4; j++) {
+            std::cout << projection[i][j] << (j < 3 ? ", " : "");
+        }
+        std::cout << "]" << std::endl;
+    }
+    
+    std::cout << "View Matrix:" << std::endl;
+    for (int i = 0; i < 4; i++) {
+        std::cout << "  [";
+        for (int j = 0; j < 4; j++) {
+            std::cout << view[i][j] << (j < 3 ? ", " : "");
+        }
+        std::cout << "]" << std::endl;
+    }
+    
+    std::cout << "Model Matrix:" << std::endl;
+    for (int i = 0; i < 4; i++) {
+        std::cout << "  [";
+        for (int j = 0; j < 4; j++) {
+            std::cout << model[i][j] << (j < 3 ? ", " : "");
+        }
+        std::cout << "]" << std::endl;
+    }
+    
+    // Print vectors
+    std::cout << "Light Position: [" << lightPos.x << ", " << lightPos.y << ", " << lightPos.z << "]" << std::endl;
+    std::cout << "View Position: [" << viewPos.x << ", " << viewPos.y << ", " << viewPos.z << "]" << std::endl;
+    
+    // Print uniform locations
+    std::cout << "Uniform Locations:" << std::endl;
+    std::cout << "  diffusePtr: " << diffusePtr << std::endl;
+    std::cout << "  normalPtr: " << normalPtr << std::endl;
+    std::cout << "  projPtr: " << projPtr << std::endl;
+    std::cout << "  viewPtr: " << viewPtr << std::endl;
+    std::cout << "  modelPtr: " << modelPtr << std::endl;
+    std::cout << "  transformPtr: " << transformPtr << std::endl;
+    std::cout << "  lightPosPtr: " << lightPosPtr << std::endl;
+    std::cout << "  viewPosPtr: " << viewPosPtr << std::endl;
+    std::cout << "=================================" << std::endl;
+}
+
+    void draw(std::span<const glm::mat4> transforms
+        , glm::mat4 projection
+        , glm::mat4 view
+        , glm::mat4 model
+        , glm::vec3 light_position
+        , glm::vec3 view_position)
     {
         assert(transforms.size() > 0);
         assert(transforms.size() <= Animation::MaxBones);
@@ -352,14 +422,15 @@ void main()
         glUniformMatrix4fv(viewPtr, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(modelPtr, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(transformPtr, GLsizei(transforms.size()), GL_FALSE, glm::value_ptr(transforms[0]));
-        glUniform3fv(lightPosPtr, 1, glm::value_ptr(lightPos));
-        glUniform3fv(viewPosPtr, 1, glm::value_ptr(viewPos));
+        glUniform3fv(lightPosPtr, 1, glm::value_ptr(light_position));
+        glUniform3fv(viewPosPtr, 1, glm::value_ptr(view_position));
 
-        for(RenderMesh& mesh : meshes)
+        for (RenderMesh& mesh : meshes)
         {
             mesh.draw(textures, diffusePtr, normalPtr, debugFlagPtr);
         }
     }
+
 
 private:
 
