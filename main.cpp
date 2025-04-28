@@ -4,74 +4,12 @@
 #include <vector>
 #include <iostream>
 //#include "src/Camera/Camera.h"
-#include "src/Render/Render.h"
-
+#include "src/AnimatedMeshes/Render/Render.h"
+#include "src/AnimatedMeshes/Camera/Camera.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-struct Camera
-{
-    glm::vec3 _position = glm::vec3(0.f);
-    glm::vec3 _front = glm::vec3(0.f, 0.f, -1.f);
-    glm::vec3 _up = glm::vec3(0.f, 1.f, 0.f);
-    glm::vec3 _right = glm::vec3(1.f, 0.f, 0.f);
-    glm::vec3 _world_up = glm::vec3(0.f, 1.f, 0.f);
-    float _yaw = -90.f;
-    float _pitch = 0.f;
-    float _movement_speed = 2.5f;
-    float _mouse_sensitivity = 0.1f;
-    float _zoom = 45.f;
 
-#if !defined(NAN)
-#  error Compiler does not support float's NAN.
-#endif
-    float _mouse_last_x = NAN;
-    float _mouse_last_y = NAN;
-
-    glm::mat4 view_matrix() const
-    {
-        return glm::lookAt(_position, _position + _front, _up);
-    }
-
-    void on_keyboard_move(glm::vec3 delta, float deltaTime)
-    {
-        float velocity = _movement_speed * deltaTime;
-        _position += delta * velocity;
-    }
-
-    void on_mouse_scroll(float yoffset)
-    {
-        _zoom -= yoffset;
-    }
-
-    void on_mouse_move(float x, float y)
-    {
-        if (std::isnan(_mouse_last_x) || std::isnan(_mouse_last_y))
-        {
-            _mouse_last_x = x;
-            _mouse_last_y = y;
-        }
-        const float xoffset = (x - _mouse_last_x) * _mouse_sensitivity;
-        const float yoffset = (_mouse_last_y - y) * _mouse_sensitivity;
-        _mouse_last_x = x;
-        _mouse_last_y = y;
-        _yaw += xoffset;
-        _pitch += yoffset;
-        force_refresh();
-    }
-
-    void force_refresh()
-    {
-        _pitch = std::clamp(_pitch, -89.0f, 89.0f);
-
-        _front.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-        _front.y = sin(glm::radians(_pitch));
-        _front.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-        _front = glm::normalize(_front);
-        _right = glm::normalize(glm::cross(_front, _world_up));
-        _up = glm::normalize(glm::cross(_right, _front));
-    }
-};
 
 struct AppState {
     Camera camera = Camera(glm::vec3(0.f, 0.f, 3.f));
@@ -129,7 +67,6 @@ static void HandleInput(GLFWwindow* window)
     {
         if (glfwGetKey(window, key) == GLFW_PRESS)
         {
-            std::fprintf(stderr, "key: %d\n", key);
             camera.on_keyboard_move(delta, app->dt);
             camera.force_refresh();
             break;
@@ -175,8 +112,12 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
 
+    const char* const path = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/TestAssets/DanceTest/Dance.dae";
+    const float model_scale = 0.012f;
+    const int animation_index = -1;
+    const float time_speed = 1.f;
     
-    auto [renderModel, animation] = AssimpModel::LoadAnimatedModel("../../assets/TestAssets/DanceTest/Dance.dae", 0);
+    auto [renderModel, animation] = AssimpModel::LoadAnimatedModel(path, -1);
 
     app.camera.force_refresh();
     while(!glfwWindowShouldClose(window))
@@ -187,18 +128,16 @@ int main() {
         app.lastFrameTime = currentTime;
         HandleInput(window);
 
-        animation.update(app.dt * 1.f);
+        animation.update(app.dt * time_speed);
 
         if(app.ScreenHeight <= 0)
         {
             continue;
         }
 
-        app.camera._position = glm::vec3(0.f, 5.f, 10.f);
-
         const glm::mat4 view = app.camera.view_matrix();
         const glm::mat4 projection = glm::perspective(glm::radians(app.camera._zoom), ((app.ScreenWidth * 1.f) / app.ScreenHeight), 0.1f, 10000.f);
-        glm::mat4 model = glm::scale(glm::mat4(1.f), glm::vec3(0.5f));
+        glm::mat4 model = glm::scale(glm::mat4(1.f), glm::vec3(model_scale));
 
         glClearColor(0.5f, 0.5f, 0.5f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
