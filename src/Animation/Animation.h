@@ -1,58 +1,214 @@
-#pragma once
-
-#include <vector>
-#include <map>
 #include <glm/glm.hpp>
-#include <functional>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <vector>
+#include <optional>
 #include <string>
-#include "../Object/Object.h"
-#include "Bone/Bone.h"
-#include "../BoneInfo.h"
+#include <span>
+using boneIndex = int;
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
+#define MAX_BONE_INFLUENCE 4
 
-struct AssimpNodeData
+#pragma region HelperStructs
+
+struct AnimVertex
 {
-    std::string name;
-    glm::mat4 transform;
-    int childrenCount = 0;
-    std::vector<AssimpNodeData> children;
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 texCoords;
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
+    boneIndex m_BoneIDs[MAX_BONE_INFLUENCE];
+    float m_Weights[MAX_BONE_INFLUENCE];
 };
 
-class Animation
+struct KeyPosition
+{
+    glm::vec3 position;
+    float timeStamp;
+};
+
+struct KeyRotation
+{
+    glm::quat orientation;
+    float timeStamp;
+};
+
+struct KeyScale
+{
+    glm::vec3 scale;
+    float timeStamp;
+};
+
+struct BoneKeyFrames 
+{
+    boneIndex boneIndex = -1;
+    glm::mat4 inverseBindPose = glm::mat4(1.0f);
+    std::vector<KeyPosition> positions;
+    std::vector<KeyRotation> rotations;
+    std::vector<KeyScale> scales;
+
+    bool hasAnyKeyframes() const
+    {
+        return !positions.empty() && !rotations.empty() && !scales.empty();
+    }
+
+    float prevAnimationTime = -1;
+    int prevPositionIndex = -1;
+    int prevRotationIndex = -1;
+    int prevScaleIndex = -1;
+
+    
+    glm::mat4 InterpolateFramesAt(float animation_time)
+    {
+        const glm::mat4 translation = interpolate_position(animation_time);
+        const glm::mat4 rotation = interpolate_rotation(animation_time);
+        const glm::mat4 scale = interpolat_scaling(animation_time);
+        prevAnimationTime = animation_time;
+        return translation * rotation * scale;
+    }
+
+    template<typename T>
+    struct KeyTimeCompare
+    {
+        bool operator()(const T& lhs, const T& rhs) const
+        {
+            return lhs.timeStamp < rhs.timeStamp;
+        }
+        bool operator()(float animationTime, const T& rhs) const
+        {
+            return animationTime  < rhs.timeStamp;
+        }
+        bool operator()(const T& lhs, float animationTime) const
+        {
+            return lhs.timeStamp < animationTime;
+        }
+    };
+
+    template<typename T>
+    static int GetFrameIndex(const std::vector<T>& keyFrames, float animationTime, unsigned startOffset, unsigned endOffset )
+    {
+        assert(keyFrames.size() >= 2);
+        auto it = std::lower_bound(keyFrames.cbegin(), keyFrames.end(), animationTime, KeyTimeCompare<T>{});
+
+        if(it == keyFrames.cbegin())
+        {
+            it = keyFrames.cbegin() + 1;
+        }
+
+        assert(it != keyFrames.cend());
+        const int index = (int(std::distance(keyFrames.cbegin(), it)) - 1);
+        assert(index >= 0);
+        assert(index < (int(keyFrames.size()) - 1));
+        assert(keyFrames[index].timeStamp <= animationTime);
+        assert(keyFrames[index + 1].timeStamp >= animationTime);
+        return index;
+    };
+
+    template<typename T>
+    static int UpdateFrameIndex(const std::vector<T>& keyFrames, float animationTime, int prevIndex, float prevAnimTime)
+    {
+        assert(prevIndex < int(keyFrames.size()));
+        if(prevIndex < 0)
+        {
+            return GetFrameIndex(keyFrames, animationTime, 0, unsigned(keyFrames.size()));
+        }
+        assert(prevIndex >= 0);
+        assert(prevAnimTime >= 0);
+        if(animationTime >= prevAnimTime)
+        {
+            return GetFrameIndex(keyFrames, animationTime, prevIndex, unsigned(keyFrames.size()));
+        }
+        return GetFrameIndex(keyFrames, animationTime, 0, prevIndex);
+    };
+
+    static float GetScaleFactor(float start, float end, float animationTime)
+    {
+        assert(animationTime >= start);
+        assert(end > start);
+        const float progress = animationTime - start;
+        const float total = end - start;
+        assert(progress <= total);
+        return progress / total;
+    }
+
+    glm::mat4 interpolate_position(float animation_time)
+    {
+        assert(positions.size() > 0);
+        if(positions.size() == 1)
+        {
+            return glm::translate(glm::mat4(1.0f), positions[0].position);
+        }
+        const int p0 = UpdateFrameIndex(positions, animation_time, prevPositionIndex, prevAnimationTime);
+        prevPositionIndex = p0;
+        const KeyPosition& prev = positions[p0];
+        const KeyPosition& next = positions[p0 + 1];
+        const float scale_factor = GetScaleFactor(prev.timeStamp, next.timeStamp, animation_time);
+        const glm::vec3 position = glm::mix(prev.position, next.position, scale_factor);
+        return glm::translate(glm::mat4(1.0f), position);
+    }
+
+    glm::mat4 interpolate_rotation(float animation_time)
+    {
+        assert(rotations.size() > 0);
+        if(rotations.size() == 1)
+        {
+            return glm::mat4_cast(rotations[0].orientation);
+        }
+        const int p0 = UpdateFrameIndex(rotations, animation_time, prevRotationIndex, prevAnimationTime);
+        prevRotationIndex = p0;
+        const KeyRotation& prev = rotations[p0];
+        const KeyRotation& next = rotations[p0 + 1];
+        const float scale_factor = GetScaleFactor(prev.timeStamp, next.timeStamp, animation_time);
+        const glm::quat orientation = glm::normalize(glm::slerp(prev.orientation, next.orientation, scale_factor));
+        return glm::mat4_cast(orientation);
+    }
+
+    glm::mat4 interpolat_scaling(float animation_time)
+    {
+        assert(scales.size() > 0);
+        if(scales.size() == 1)
+        {
+            return glm::scale(glm::mat4(1.0f), scales[0].scale);
+        }
+        const int p0 = UpdateFrameIndex(scales, animation_time, prevScaleIndex, prevAnimationTime);
+        prevScaleIndex = p0;
+        const KeyScale& prev = scales[p0];
+        const KeyScale& next = scales[p0 + 1];
+        const float scale_factor = GetScaleFactor(prev.timeStamp, next.timeStamp, animation_time);
+        const glm::vec3 scale = glm::mix(prev.scale, next.scale, scale_factor);
+        return glm::scale(glm::mat4(1.0f), scale);
+    }
+};
+
+struct animNode
+{
+    std::optional<BoneKeyFrames> boneKeyFrames;
+    glm::mat4 transform;
+    
+    int parent = -1;
+    glm::mat4 localTransform;
+    std::string debugName;
+    int debugvertices = -1;
+};
+#pragma endregion
+
+class Animation 
 {
 public:
-    Animation() = default;
-    Animation(const std::string& animationPath, Object* obj);
-    ~Animation(){};
+    static constexpr std::size_t MaxBones = 100;
+    Animation();
+    Animation(glm::mat4 rootInverse, std::vector<animNode>&& nodes, unsigned bones_count, float duration, float ticksPerSecond);
 
-    Bone* FindBone(const std::string& name) const;
-    inline float GetTicksPerSecond() const { return m_TicksPerSecond; }
-    inline float GetDuration() const { return m_Duration; }
-    inline const AssimpNodeData& GetRootNode() const { return m_RootNode; }
-    inline const std::map<std::string, BoneInfo*>& GetBoneMap() const { return m_BoneMap; }
-
+    void update(float dt);
+    std::span<const glm::mat4> transforms() const;
+    void debugDump() const;
 private:
-    void ReadHierarchyData(AssimpNodeData& dest, const aiNode* src);
-    void ReadMissingBones(const aiAnimation* animation, Object* obj);
-
-    AssimpNodeData m_RootNode;
-    std::map<std::string, BoneInfo*> m_BoneMap;
-    std::vector<Bone*> m_Bones;
-    float m_Duration = 0.0f;
-    float m_TicksPerSecond = 0.0f;
-
-    static inline glm::mat4 ConvertMatrixToGLMFormat(const aiMatrix4x4& from)
-	{
-		glm::mat4 to;
-		//the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
-		to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
-		to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
-		to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
-		to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
-		return to;
-	}
-
-
+    glm::mat4 globalRootInverse;
+    std::vector<glm::mat4> matrixTransforms;
+    std::vector<animNode> nodes;
+    unsigned bonesCount;
+    float currentTime;
+    float duration;
+    float ticksPerSecond;
 };

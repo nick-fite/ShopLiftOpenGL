@@ -1,92 +1,52 @@
 #include "Animation.h"
-Animation::Animation(const std::string& animationPath, Object* obj)
+Animation::Animation(glm::mat4 rootInverse, std::vector<animNode>&& nodes, unsigned bones_count, float duration, float ticksPerSecond)
+: globalRootInverse(rootInverse), 
+  matrixTransforms(MaxBones, glm::mat4(1.0f)), 
+  nodes(std::move(nodes)), 
+  bonesCount(bones_count), 
+  duration(duration), 
+  ticksPerSecond(ticksPerSecond)
 {
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(animationPath, aiProcess_Triangulate);
-    assert(scene && scene->mRootNode);
-    aiAnimation* animation = scene->mAnimations[0];
-    m_Duration = animation->mDuration;
-    m_TicksPerSecond = animation->mTicksPerSecond;
-    aiMatrix4x4 globalTransformation = scene->mRootNode->mTransformation;
-    globalTransformation = globalTransformation.Inverse();
-    ReadHierarchyData(m_RootNode, scene->mRootNode);
-    std::cout << "loading animation: " << animationPath << std::endl;
-    ReadMissingBones(animation, obj);
+
 }
 
-Bone* Animation::FindBone(const std::string& name) const 
+void Animation::update(float dt)
 {
-    std::vector<Bone*>::const_iterator itr = std::find_if(m_Bones.begin(), m_Bones.end(), 
-        [&](const Bone* bone)  // Changed from reference to pointer
+    currentTime += ticksPerSecond * dt;
+    currentTime = fmod(currentTime, duration);
+    for(std::size_t i = 0; i < nodes.size(); ++i)
+    {
+        animNode& node = nodes[i];
+        assert(int(i) > node.parent);
+
+        const glm::mat4 transform = (node.boneKeyFrames && node.boneKeyFrames->hasAnyKeyframes()) ? 
+        node.boneKeyFrames->InterpolateFramesAt(currentTime) : node.localTransform;
+        
+        const glm::mat4 parentTransform = (node.parent >= 0) ? 
+        nodes[node.parent].transform : glm::mat4(1.0f);
+
+        node.transform = parentTransform * transform;
+        if(!node.boneKeyFrames)
         {
-            return bone->GetBoneName() == name;  // Use -> instead of .
+            continue;
         }
-    );
-    if(itr == m_Bones.end())
-    {
-        return nullptr;
+
+        const std::size_t boneIndex = node.boneKeyFrames->boneIndex;
+        assert(boneIndex < matrixTransforms.size() && "Too many bones, see bone limit.");
+
+        matrixTransforms[boneIndex] = globalRootInverse * node.transform * node.boneKeyFrames->inverseBindPose;
     }
-    else return (*itr);
+
 }
 
-void Animation::ReadHierarchyData(AssimpNodeData& dest, const aiNode* src)
+std::span<const glm::mat4> Animation::transforms() const
 {
-    assert(src);
-
-    dest.name = src->mName.C_Str();
-    dest.transform = ConvertMatrixToGLMFormat(src->mTransformation);
-    dest.childrenCount = src->mNumChildren;
-
-    for(int i = 0; i < src->mNumChildren; ++i)
-    {
-        AssimpNodeData newData;
-        ReadHierarchyData(newData, src->mChildren[i]);
-        dest.children.push_back(newData);
-    }
+    const glm::mat4* ptr = matrixTransforms.data();
+    const std::size_t count = bonesCount > 0 ? std::size_t(bonesCount) : matrixTransforms.size();
+    return std::span<const glm::mat4>(ptr, count);
 }
 
-void Animation::ReadMissingBones(const aiAnimation* animation, Object* obj)
+void Animation::debugDump() const
 {
-    int size = animation->mNumChannels;
 
-		auto& boneInfoMap = obj->GetBoneInfoMap();//getting m_BoneInfoMap from Model class
-		int& boneCount = obj->getBoneCount(); //getting the m_BoneCounter from Model class
-// Print out the boneInfoMap before processing
-    std::cout << "--- BoneInfoMap Contents Before Processing ---" << std::endl;
-    std::cout << "size: " << size << std::endl;
-    std::cout << "bonecount: " << boneCount << std::endl;
-    if(boneInfoMap.empty()) {
-        std::cout << "BoneInfoMap is empty!" << std::endl;
-    } else {
-        for(const auto& pair : boneInfoMap) {
-            std::cout << "Bone Name: " << pair.first;
-            if(pair.second) {
-                std::cout << ", ID: " << pair.second->ID 
-                          << ", Offset Matrix: " << glm::to_string(pair.second->offsetMatrix);
-            } else {
-                std::cout << " -> NULL POINTER";
-            }
-            std::cout << std::endl;
-        }
-    }
-    std::cout << "----------------------------------------" << std::endl;
-    
-
-
-		//reading channels(bones engaged in an animation and their keyframes)
-		for (int i = 0; i < size; i++)
-		{
-            auto channel = animation->mChannels[i];
-			std::string boneName = channel->mNodeName.data;
-            
-			if (boneInfoMap.find(boneName) == boneInfoMap.end())
-			{
-                boneInfoMap[boneName]->ID = boneCount;
-				boneCount++;
-			}
-            Bone* temp = new Bone(channel->mNodeName.data,boneInfoMap[channel->mNodeName.data]->ID, channel);
-			m_Bones.push_back(temp);
-		}
-
-		m_BoneMap = boneInfoMap;
 }

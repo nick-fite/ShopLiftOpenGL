@@ -1,14 +1,6 @@
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
-//#include "src/Object/Object.h"
-#include "src/Transform/Transform3D.h"
-#include "src/Shaders/Shader.h"
-#include "src/Shaders/ShadersProgram/ShadersProgram.h"
-#include "src/Controllers/FPSController.h"
-#include "src/Material/Material.h"
-#include "src/Animation/Animator/Animator.h"
-//#include "src/Animation/Animation.h"
 #include <vector>
 #include <iostream>
     
@@ -42,45 +34,31 @@ int main() {
     
     glewInit();
     
-    Object* obj = new Object("../../assets/TestAssets/VampireDance.fbx", "spaceguy", true);
-    std::cout << std::endl << std::endl << "attempting anim" << std::endl;
-    Animation* danceAnim = new Animation("../../assets/TestAssets/VampireDance.fbx", obj);
-    Animator* animator = new Animator(danceAnim);
-
-    Transform3D MapTransform;
-    MapTransform.SetPosition(glm::vec3(0,0,0));
-    
-    FPSController controller = FPSController();
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
     
     while(!glfwWindowShouldClose(window))
     {
-        float dt = glfwGetTime();
-        glfwSetTime(0);
+        //float dt = glfwGetTime();
+        //glfwSetTime(0);
 
-        controller.Update(window, ViewportDimensions, MousePos, dt);
+        float currentTime = glfwGetTime();
+        deltaTime = currentTime - lastFrame;
+        lastFrame = currentTime;
 
-        glm::mat4 view = controller.GetTransform().GetInverseMatrix();
-        glm::mat4 projection = glm::perspective(1.f, ViewportDimensions.x/ViewportDimensions.y, .1f, 1000.f);
-        glm::mat4 viewProjection = projection * view;
 
+        
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.05,0.05,0.05, 1.0);
-
-        //auto transform = animator->GetFinalBoneMatrices();
-        //for(int i = 0; i < transform.size(); ++i)
-       // {
-            //obj->SetBoneTransform(i, transform[i]);
-        //}
+        
 
 
-        obj->DrawMeshes(viewProjection, MapTransform.GetMatrix(), controller.GetTransform().getPosition());
         
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
     
-    delete obj;
     //delete animator;
     //delete danceAnim;
     //delete obj2;
