@@ -60,10 +60,17 @@ static void HandleInput(GLFWwindow* window)
         {GLFW_KEY_E, +camera._up},
         {GLFW_KEY_Q, -camera._up},
     };
+    
+    //std::fprintf(stderr, "deltaX: %d\n", key_delta[0].delta.x);
+    //std::fprintf(stderr, "deltaY: %d\n", key_delta[0].delta.y);
+    //std::fprintf(stderr, "deltaZ: %d\n", key_delta[0].delta.z);
+    
+
     for (const auto& [key, delta] : key_delta)
     {
         if (glfwGetKey(window, key) == GLFW_PRESS)
         {
+            std::fprintf(stderr, "key: %d\n", key);
             camera.on_keyboard_move(delta, app->dt);
             break;
         }
@@ -84,18 +91,17 @@ static void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, in
 }
 
 int main() {
-
+    
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, 4);
-
-
+    
     AppState app;
-
+    
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
+    
     GLFWwindow* window = glfwCreateWindow(mode->width/1.5, mode->height/1.5, "Model", NULL, NULL);
     glfwSetWindowUserPointer(window, &app);
     glfwMakeContextCurrent(window);
@@ -104,29 +110,31 @@ int main() {
     glfwSetScrollCallback(window, OnMouseScroll);
     glfwSetKeyCallback(window, OnKeyEvent);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-
-    auto [renderModel, animation] = AssimpModel::LoadAnimatedModel("D:/profile redirect/nfite/Desktop/ShopLiftOpenGL - Copy/assets/TestAssets/DanceTest/Dance.dae", 0);
-
-    app.camera.force_refresh();
     
     glewInit();
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+
     
+    auto [renderModel, animation] = AssimpModel::LoadAnimatedModel("../../assets/TestAssets/DanceTest/Dance.dae", 0);
+
+    app.camera.force_refresh();
     while(!glfwWindowShouldClose(window))
     {
+        //std::fprintf(stderr, "FPS: %f\n", 1.f / app.dt);
         const float currentTime = float(glfwGetTime());
         app.dt = currentTime - app.lastFrameTime;
         app.lastFrameTime = currentTime;
         HandleInput(window);
 
-        animation.update(app.dt);
+        animation.update(app.dt * 1.f);
 
         if(app.ScreenHeight <= 0)
         {
             continue;
         }
 
-        const glm::mat4 projection = glm::perspective(glm::radians(app.camera._zoom), float(app.ScreenWidth) / float(app.ScreenHeight), 0.1f, 100.f);
+        const glm::mat4 projection = glm::perspective(glm::radians(app.camera._zoom), float(app.ScreenWidth) / float(app.ScreenHeight), 0.1f, 10000.f);
         const glm::mat4 view = app.camera.view_matrix();
         glm::mat4 model = glm::scale(glm::mat4(1.f), glm::vec3(1.f));
 
@@ -134,6 +142,10 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         renderModel.draw(animation.transforms(), projection, view, model, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
+        //std::fprintf(stderr, "Camera position: %f %f %f\n", app.camera._position.x, app.camera._position.y, app.camera._position.z);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
     
     //delete animator;

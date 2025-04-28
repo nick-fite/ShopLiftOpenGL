@@ -115,7 +115,7 @@ AnimMesh AssimpAnimation::LoadMesh(const std::filesystem::path& path, const aiMe
 std::vector<AnimMesh> AssimpAnimation::LoadModelMeshWithAnimationsWeights(const std::filesystem::path& modelPath, 
     const aiScene& scene, BoneInfoRemap& boneInfo)
 {
-    std::fprintf(stderr, "OpenGL version: \n");
+    //std::fprintf(stderr, "OpenGL version: \n");
     std::vector<AnimMesh> meshes;
 
     std::stack<const aiNode*> dfs;

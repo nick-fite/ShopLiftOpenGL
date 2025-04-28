@@ -19,6 +19,17 @@ struct RenderTexture
 
     static RenderTexture FromMemory(TextureType type, unsigned width, unsigned height, const void* data, GLenum format)
     {
+        if(glfwGetCurrentContext() == nullptr)
+        {
+            std::fprintf(stderr, "No OpenGL context\n");
+            return RenderTexture();
+        }
+        GLenum err = glGetError();
+        if (err != GL_NO_ERROR) {
+            std::fprintf(stderr, "OpenGL error: %d\n", err);
+            // Handle error appropriately
+        }
+        std::fprintf(stderr, "loading textures \n");
         unsigned texture_name = 0;
         glGenTextures(1, &texture_name);
         glBindTexture(GL_TEXTURE_2D, texture_name);
@@ -33,6 +44,7 @@ struct RenderTexture
 
     static RenderTexture InvalidWhite()
     {
+        std::fprintf(stderr, "loading white\n");
         unsigned data = 0xffffff;
         return RenderTexture::FromMemory(TextureType::None, 1, 1, &data, GL_RGB);
     }
@@ -79,6 +91,7 @@ public:
             case 4: format = GL_RGBA; break;
             default: assert(false); break;
         }
+        std::fprintf(stderr, "loading textures \n");
         RenderTexture texture = RenderTexture::FromMemory(rawTex.type, width, height, data, format);
         stbi_image_free(data);
         return texture;
@@ -90,7 +103,7 @@ using TextureHandle = int;
 
 struct TexturesDB
 {
-    RenderTexture invalid = RenderTexture::InvalidWhite();
+    RenderTexture invalid;
     std::vector<RenderTexture> textures;
     
     TextureHandle add(RenderTexture&& texture)
@@ -399,11 +412,10 @@ struct AssimpModel
         Assimp::Importer importer;
         (void)importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 4);
         const aiScene* scene = importer.ReadFile(path.string()
-        , aiProcess_Triangulate 
-        | aiProcess_FlipUVs 
-        | aiProcess_CalcTangentSpace 
-        | aiProcess_JoinIdenticalVertices 
-        | aiProcess_OptimizeMeshes);
+        , aiProcess_Triangulate
+        | aiProcess_CalcTangentSpace
+        | aiProcess_FlipUVs
+        | aiProcess_LimitBoneWeights);
 
         if(!scene)
         {
@@ -415,7 +427,6 @@ struct AssimpModel
         
         BoneInfoRemap bonesInfo;
         TexturesDB textures;
-        //std::fprintf(stderr, "Loading model: %s\n", path.string().c_str());
         std::vector<AnimMesh> meshes = AssimpAnimation::LoadModelMeshWithAnimationsWeights(path, *scene, bonesInfo);
         if(!bonesInfo.hasAnyBones())
         {

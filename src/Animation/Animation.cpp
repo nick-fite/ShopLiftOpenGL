@@ -13,6 +13,7 @@ Animation::Animation(glm::mat4 rootInverse, std::vector<animNode>&& nodes, unsig
 void Animation::update(float dt)
 {
     currentTime += ticksPerSecond * dt;
+    //std::fprintf(stderr, "currentTime: %f\n", currentTime);
     currentTime = fmod(currentTime, duration);
     for(std::size_t i = 0; i < nodes.size(); ++i)
     {

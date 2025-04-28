@@ -62,6 +62,7 @@ struct BoneKeyFrames
     
     glm::mat4 InterpolateFramesAt(float animation_time)
     {
+        //std::fprintf(stderr, "InterpolateFramesAt: %f\n", animation_time);
         const glm::mat4 translation = interpolate_position(animation_time);
         const glm::mat4 rotation = interpolate_rotation(animation_time);
         const glm::mat4 scale = interpolat_scaling(animation_time);
@@ -208,8 +209,8 @@ private:
     glm::mat4 globalRootInverse;
     std::vector<glm::mat4> matrixTransforms;
     std::vector<animNode> nodes;
-    unsigned bonesCount;
-    float currentTime;
-    float duration;
-    float ticksPerSecond;
+    unsigned bonesCount = 0;
+    float currentTime = 0;
+    float duration = 0;
+    float ticksPerSecond = 0;
 };
