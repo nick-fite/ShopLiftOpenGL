@@ -5,6 +5,6 @@
     "glew",
     "glfw3",
     "glm",
-    "freeimage"
+    "stb"
   ]
 }

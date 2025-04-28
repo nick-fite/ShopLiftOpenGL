@@ -1,3 +1,4 @@
+#pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -197,7 +198,7 @@ class Animation
 {
 public:
     static constexpr std::size_t MaxBones = 100;
-    Animation();
+    Animation() = default;
     Animation(glm::mat4 rootInverse, std::vector<animNode>&& nodes, unsigned bones_count, float duration, float ticksPerSecond);
 
     void update(float dt);

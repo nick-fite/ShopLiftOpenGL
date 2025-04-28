@@ -113,10 +113,11 @@ struct BoneInfoRemap
 };
 
 class AssimpAnimation {
-    AnimMesh LoadMesh(const std::filesystem::path& path, const aiMesh& mesh, const aiScene& scene, BoneInfoRemap& boneInfoRemap);
-    std::vector<AnimMesh> LoadModelMeshWithAnimationsWeights(const std::filesystem::path& modelPath, 
-        const aiScene& scene, const aiMesh& mesh, BoneInfoRemap& boneInfo);
-    BoneKeyFrames LoadBoneKeyFrames(const aiNodeAnim& channel, const BoneMeshInfo& boneMeshInfo);
-    Animation LoadAnimation(const aiScene& scene, int animationIndex, const BoneInfoRemap& boneInfoRemap);
+public:
+    static AnimMesh LoadMesh(const std::filesystem::path& path, const aiMesh& mesh, const aiScene& scene, BoneInfoRemap& boneInfoRemap);
+    static std::vector<AnimMesh> LoadModelMeshWithAnimationsWeights(const std::filesystem::path& modelPath, 
+        const aiScene& scene, BoneInfoRemap& boneInfo);
+    static BoneKeyFrames LoadBoneKeyFrames(const aiNodeAnim& channel, const BoneMeshInfo& boneMeshInfo);
+    static Animation LoadAnimation(const aiScene& scene, int animationIndex, const BoneInfoRemap& boneInfoRemap);
 
 };
