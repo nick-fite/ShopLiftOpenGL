@@ -46,7 +46,7 @@ struct RenderTexture
     static RenderTexture InvalidWhite()
     {
         std::fprintf(stderr, "loading white\n");
-        unsigned data = 0x888888;
+        unsigned data = 0x666666;
         return RenderTexture::FromMemory(TextureType::None, 1, 1, &data, GL_RGB);
     }
     ~RenderTexture() noexcept
@@ -478,15 +478,28 @@ struct AssimpModel
     RenderModel model;
     Animation animation;
 
-    static AssimpModel LoadAnimatedModel(std::filesystem::path path, int animationIndex = -1)
+    static AssimpModel LoadAnimatedModel(std::filesystem::path path, int animationIndex = -1, bool isStatic = false)
     {
         Assimp::Importer importer;
         (void)importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 4);
-        const aiScene* scene = importer.ReadFile(path.string()
-        , aiProcess_Triangulate
-        | aiProcess_CalcTangentSpace
-        | aiProcess_PreTransformVertices
-        | aiProcess_LimitBoneWeights);
+        const aiScene* scene; 
+        if(!isStatic)
+        {
+            scene = importer.ReadFile(path.string()
+            , aiProcess_Triangulate
+            | aiProcess_CalcTangentSpace
+            | aiProcess_FlipUVs
+            | aiProcess_LimitBoneWeights);
+        }
+        else {
+            scene = importer.ReadFile(path.string()
+            , aiProcess_Triangulate
+            | aiProcess_CalcTangentSpace
+            | aiProcess_PreTransformVertices
+            | aiProcess_FlipUVs
+            | aiProcess_LimitBoneWeights);
+
+        }
 
         if(!scene)
         {

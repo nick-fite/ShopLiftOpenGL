@@ -10,11 +10,19 @@ Animation::Animation(glm::mat4 rootInverse, std::vector<animNode>&& nodes, unsig
 
 }
 
-void Animation::update(float dt)
+bool Animation::update(float dt)
 {
+    float previousTime = currentTime;
     currentTime += ticksPerSecond * dt;
     //std::fprintf(stderr, "currentTime: %f\n", currentTime);
+    bool loopOccurred = (previousTime < duration && currentTime >= duration);
+    if(loopOccurred)
+    {
+        return true;
+    }
     currentTime = fmod(currentTime, duration);
+ 
+
     for(std::size_t i = 0; i < nodes.size(); ++i)
     {
         animNode& node = nodes[i];
@@ -37,7 +45,7 @@ void Animation::update(float dt)
 
         matrixTransforms[boneIndex] = globalRootInverse * node.transform * node.boneKeyFrames->inverseBindPose;
     }
-
+    return false;
 }
 
 std::span<const glm::mat4> Animation::transforms() const
