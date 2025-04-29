@@ -192,7 +192,7 @@ if (scene.mNumAnimations == 0)
             , scene.mNumAnimations);
     }
     animationIndex = std::max(0, animationIndex); // Try to load first one, if nothing specified.
-    assert(unsigned(animationIndex) < scene.mNumAnimations);
+    //assert(unsigned(animationIndex) < scene.mNumAnimations);
     const aiAnimation* const animation = scene.mAnimations[animationIndex];
     const float duration = float(animation->mDuration);
     const float ticks_per_second = float(animation->mTicksPerSecond);

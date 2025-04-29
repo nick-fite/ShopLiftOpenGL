@@ -26,6 +26,7 @@ struct Camera {
     {
         float velocity = _movement_speed * deltaTime;
         _position += delta * velocity;
+        std::fprintf(stderr, "Camera position: %f %f %f\n", _position.x, _position.y, _position.z);
     }
 
     void on_mouse_scroll(float yoffset)
@@ -46,6 +47,8 @@ struct Camera {
         _mouse_last_y = y;
         _yaw += xoffset;
         _pitch += yoffset;
+
+        std::fprintf(stderr, "Camera yaw: %f pitch: %f\n", _yaw, _pitch);
         force_refresh();
     }
 

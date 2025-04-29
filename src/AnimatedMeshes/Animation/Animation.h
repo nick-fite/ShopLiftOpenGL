@@ -201,6 +201,18 @@ public:
     static constexpr std::size_t MaxBones = 100;
     Animation() = default;
     Animation(glm::mat4 rootInverse, std::vector<animNode>&& nodes, unsigned bones_count, float duration, float ticksPerSecond);
+    static Animation CreateIdentityAnimation(unsigned int numBones)
+    {
+        std::vector<animNode> nodes;
+        // Create a single root node
+        animNode rootNode;
+        rootNode.parent = -1;
+        rootNode.localTransform = glm::mat4(1.0f); // Identity matrix
+        rootNode.debugName = "static_root";
+        nodes.push_back(std::move(rootNode));
+    
+        return Animation(glm::mat4(1.0f), std::move(nodes), numBones, 0.0f, 0.0f);
+    }
 
     void update(float dt);
     std::span<const glm::mat4> transforms() const;

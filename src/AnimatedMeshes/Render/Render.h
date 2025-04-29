@@ -46,7 +46,7 @@ struct RenderTexture
     static RenderTexture InvalidWhite()
     {
         std::fprintf(stderr, "loading white\n");
-        unsigned data = 0xffffff;
+        unsigned data = 0x888888;
         return RenderTexture::FromMemory(TextureType::None, 1, 1, &data, GL_RGB);
     }
     ~RenderTexture() noexcept
@@ -104,7 +104,7 @@ using TextureHandle = int;
 
 struct TexturesDB
 {
-    RenderTexture invalid;
+    RenderTexture invalid = RenderTexture::InvalidWhite();
     std::vector<RenderTexture> textures;
     
     TextureHandle add(RenderTexture&& texture)
@@ -415,8 +415,8 @@ void printDrawInputs(std::span<const glm::mat4> transforms, glm::mat4 projection
         , glm::vec3 light_position
         , glm::vec3 view_position)
     {
-        assert(transforms.size() > 0);
-        assert(transforms.size() <= Animation::MaxBones);
+        //assert(transforms.size() > 0);
+        //assert(transforms.size() <= Animation::MaxBones);
         glUseProgram(shader.id);
         glUniformMatrix4fv(projPtr, 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(viewPtr, 1, GL_FALSE, glm::value_ptr(view));
@@ -485,7 +485,7 @@ struct AssimpModel
         const aiScene* scene = importer.ReadFile(path.string()
         , aiProcess_Triangulate
         | aiProcess_CalcTangentSpace
-        | aiProcess_FlipUVs
+        | aiProcess_PreTransformVertices
         | aiProcess_LimitBoneWeights);
 
         if(!scene)
@@ -493,8 +493,8 @@ struct AssimpModel
             std::fprintf(stderr, "Error loading model: %s\n", importer.GetErrorString());
         }
         
-        assert((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) == 0);
-        assert(scene->mRootNode);
+        //assert((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) == 0);
+        //assert(scene->mRootNode);
         
         BoneInfoRemap bonesInfo;
         TexturesDB textures;
@@ -505,6 +505,15 @@ struct AssimpModel
         }
         
         Animation anim = AssimpAnimation::LoadAnimation(*scene, animationIndex, bonesInfo);
+
+        bool isStaticMesh = !bonesInfo.hasAnyBones() || (scene->mNumAnimations <= 0);
+
+        if(isStaticMesh)
+        {
+            std::fprintf(stderr, "Model is static. Loading without animation.\n");
+            anim = Animation::CreateIdentityAnimation(100);
+        }
+
         std::vector<RenderMesh> renderMeshes = RenderModel::LoadRenderMesh(std::move(textures), std::move(meshes));
         RenderModel model = RenderModel::MakeSimpleNormalMapping(std::move(textures), std::move(renderMeshes));
         return AssimpModel{std::move(model), std::move(anim)};

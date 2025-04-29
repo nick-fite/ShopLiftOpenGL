@@ -103,8 +103,8 @@ int main() {
     glfwSetWindowUserPointer(window, &app);
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, OnWindowResize);
-    glfwSetCursorPosCallback(window, OnMouseMove);
-    glfwSetScrollCallback(window, OnMouseScroll);
+    //glfwSetCursorPosCallback(window, OnMouseMove);
+    //glfwSetScrollCallback(window, OnMouseScroll);
     glfwSetKeyCallback(window, OnKeyEvent);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
@@ -112,12 +112,19 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
 
-    const char* const path = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/TestAssets/DanceTest/Dance.dae";
+    const char* const worldPath = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/TestAssets/EverythingScene.fbx";
+    const char* const playerPath = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/TestAssets/Shelf.fbx";
+
     const float model_scale = 0.012f;
     const int animation_index = -1;
     const float time_speed = 1.f;
     
-    auto [renderModel, animation] = AssimpModel::LoadAnimatedModel(path, -1);
+    auto [worldModel, worldAnim] = AssimpModel::LoadAnimatedModel(worldPath, -1);
+    auto [KidModel, KidAnim] = AssimpModel::LoadAnimatedModel(playerPath, -1);
+    
+    app.camera._position = glm::vec3(-0.196283, 0.586121, 0.422279);
+    app.camera._yaw = -90.f;
+    app.camera._pitch = -50.f;
 
     app.camera.force_refresh();
     while(!glfwWindowShouldClose(window))
@@ -126,9 +133,9 @@ int main() {
         const float currentTime = float(glfwGetTime());
         app.dt = currentTime - app.lastFrameTime;
         app.lastFrameTime = currentTime;
-        HandleInput(window);
+        //HandleInput(window);
 
-        animation.update(app.dt * time_speed);
+        //animation.update(app.dt * time_speed);
 
         if(app.ScreenHeight <= 0)
         {
@@ -142,7 +149,8 @@ int main() {
         glClearColor(0.5f, 0.5f, 0.5f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        renderModel.draw(animation.transforms(), projection, view, model, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
+        worldModel.draw(worldAnim.transforms(), projection, view, model, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
+        KidModel.draw(KidAnim.transforms(), projection, view, model, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
         //std::fprintf(stderr, "Camera position: %f %f %f\n", view, app.camera._position.y, app.camera._position.z);
 
         glfwSwapBuffers(window);
