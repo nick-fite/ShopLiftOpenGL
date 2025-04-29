@@ -36,6 +36,8 @@ struct AppState {
     int ScreenHeight = 600;
     glm::vec3 playerPos = glm::vec3(0.f);
     float playerRot = 0.f;
+    glm::vec3 managerPos = glm::vec3(0.f);
+    float managerRot = 0.f;
 
 };
 
@@ -52,11 +54,11 @@ static void OnMouseMove(GLFWwindow* window, double xpos, double ypos) {
     appState->camera.on_mouse_move(float(xpos), float(ypos));
 }
 
-static glm::vec3 sunPos = glm::vec3(-5.f, 15.f, 55.f);
+static glm::vec3 sunPos = glm::vec3(-5.f, 15.f, -12.f);
 
 static void OnMouseScroll(GLFWwindow* window, double xoffset, double yoffset) {
-    sunPos.z += float(yoffset);
-    std::fprintf(stderr, "sunPos: %f\n", sunPos.z);
+    //sunPos.z += float(yoffset);
+    //std::fprintf(stderr, "sunPos: %f\n", sunPos.z);
     //position.y += float(yoffset);
     //AppState* appState = static_cast<AppState*>(glfwGetWindowUserPointer(window));
     //appState->camera.on_mouse_scroll(float(yoffset));
@@ -110,6 +112,11 @@ bool isInRestrictedZone(const glm::vec3& position) {
         {-0.9f, 2.5f}
     };
     
+    if(position.x > 3.5f || position.x < -14.5f)
+    {
+        return true;
+    }
+
     // Check if position is within any of the ranges
     for (const auto& range : restrictedRanges) {
         if (position.x >= range.min && position.x <= range.max) {
@@ -124,14 +131,87 @@ bool isInRestrictedZone(const glm::vec3& position) {
     return false;
 }
 
+// Item storage map with file path -> position mapping
+std::map<const char*, Item> itemPositions;
+
+// Function to add item to the map
+const char* AddItem(const std::string& filePath, float xStart, float xEnd, float yStart, float yEnd, bool isLeft) {
+    // Allocate memory for the path string that persists after function returns
+    const char* pathCopy = _strdup(filePath.c_str());
+    
+    // Store in the map
+    itemPositions[pathCopy].xStart = xStart;
+    itemPositions[pathCopy].xEnd = xEnd;
+    itemPositions[pathCopy].yStart = yStart;
+    itemPositions[pathCopy].yEnd = yEnd;
+    itemPositions[pathCopy].isLeft = isLeft;
+    //itemPositions[pathCopy].index = index;
+    
+    // Return the pointer for reference
+    return pathCopy;
+}
+
+bool isPlayerNearItem(const glm::vec3& playerPos, const Item& item) {
+    // Check if player is within the bounds of the item
+    bool withinX = (playerPos.x >= item.xStart && playerPos.x <= item.xEnd);
+    bool withinZ = (playerPos.z >= item.yStart && playerPos.z <= item.yEnd);
+    
+    return withinX && withinZ;
+}
+
+std::vector<std::shared_ptr<RenderModel>> itemModels;
+std::vector<std::shared_ptr<Animation>> itemAnims;
+bool isLeft = false;
+
 static void HandleInput(GLFWwindow* window, float dt, glm::vec3& poosition, float& rot, Player& playerState)
 {
+    isLeft = false;
+    
+    
+
+    if(playerState.isStealing) return;
+
     if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
     {
-        playerState.isIdle = false;
-        playerState.isWalking = false;
-        playerState.isRunning = false;
-        playerState.isStealing = true;
+        
+        const char* itemToRemove = nullptr;
+        int indexToRemove = -1;
+        
+        for (const auto& [itemPath, itemData] : itemPositions) {
+            if (isPlayerNearItem(poosition, itemData)) {
+                // Found an item to steal
+                itemToRemove = itemPath;
+                indexToRemove = itemData.index;
+                break; // Only steal one item per press
+            }
+        }
+        
+        if (itemToRemove != nullptr && indexToRemove >= 0 && indexToRemove < itemModels.size()) {
+            // Start stealing animation
+            playerState.isIdle = false;
+            playerState.isWalking = false;
+            playerState.isRunning = false;
+            playerState.isStealing = true;
+        
+            // Debug output
+            std::fprintf(stderr, "Stealing item at index %d\n", indexToRemove);
+        
+            // Remove the item from render vectors
+            itemModels.erase(itemModels.begin() + indexToRemove);
+            itemAnims.erase(itemAnims.begin() + indexToRemove);
+        
+            // Update indices of remaining items
+            for (auto& [path, item] : itemPositions) {
+                if (item.index > indexToRemove) {
+                    item.index--; // Decrement indices of items after the removed one
+                }
+            }
+        
+            // Remove from map and free memory
+            itemPositions.erase(itemToRemove);
+            free((void*)itemToRemove);
+        }
+
         return;
     }
     if(playerState.isStealing)
@@ -171,12 +251,13 @@ static void HandleInput(GLFWwindow* window, float dt, glm::vec3& poosition, floa
         {
             playerState.isWalking = true;
         }
-        playerState.isWalking = true;
+        playerState.isIdle = false;
         poosition += glm::vec3(0.f, 0.f, -speed * dt);
         moved = true;
     }
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
+        isLeft = true;
         rot = 90.0f;
         playerState.isIdle = false;
         if(!playerState.isRunning)
@@ -227,26 +308,6 @@ static void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, in
     }
 }
 
-// Item storage map with file path -> position mapping
-std::map<const char*, Item> itemPositions;
-
-// Function to add item to the map
-const char* AddItem(const std::string& filePath, float xStart, float xEnd, float yStart, float yEnd, bool isLeft) {
-    // Allocate memory for the path string that persists after function returns
-    const char* pathCopy = _strdup(filePath.c_str());
-    
-    // Store in the map
-    itemPositions[pathCopy].xStart = xStart;
-    itemPositions[pathCopy].xEnd = xEnd;
-    itemPositions[pathCopy].yStart = yStart;
-    itemPositions[pathCopy].yEnd = yEnd;
-    itemPositions[pathCopy].isLeft = isLeft;
-    //itemPositions[pathCopy].index = index;
-    
-    // Return the pointer for reference
-    return pathCopy;
-}
-
 // Function to clean up allocated memory when done
 void CleanupItems() {
     for (auto& [path, _] : itemPositions) {
@@ -255,8 +316,6 @@ void CleanupItems() {
     itemPositions.clear();
 }
 
-std::vector<std::shared_ptr<RenderModel>> itemModels;
-std::vector<std::shared_ptr<Animation>> itemAnims;
 
 int main() {
     
@@ -289,6 +348,10 @@ int main() {
     const char* const playerWalk = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/player/testKidTheif_Walk_withEverything.dae";
     const char* const playerRun = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/player/testKidTheif_Run_withEverything.dae";
     const char* const playerSteal = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/player/testKidTheif_Steal_withEverything.dae";
+
+    const char* const ManagerIdle = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Manager/testManager_Idle_withEverything.dae";
+    const char* const ManagerWalk = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Manager/testManager_Run_withEverything.dae";
+
     const char* const item1 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_1.fbx";
     const char* const item2 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_2.fbx";
     const char* const item3 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_3.fbx";
@@ -314,15 +377,14 @@ int main() {
     const char* const item27 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_5.fbx";
     const char* const item28 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_6.fbx";
 
-    AddItem(item1, -13, -12, -1.8, 0.2, false);
-    AddItem(item2, -12, -14, -2.7, -0.7, true);
+    AddItem(item1, -14-1, -14+1, -0.8-1, -0.8+1, false);
+    AddItem(item2, -13-1, -13+1, -3-1, -3+1, true);
     AddItem(item3, -9.6-1, -9.6+1, -1.8-1, -1.8+1, true);
     AddItem(item4, 2.8-1, 2.8+1, -2.8-1, -2.8+1, false);
     AddItem(item5, -10-1, -10+1, -4.2-1, -4.2+1, false);
     AddItem(item6, -1.8-1, -1.8+1, -2.8-1, -2.8+1, false);
     AddItem(item7, -14-1, -14+1, 0.8-1, 0.8+1, false);
     AddItem(item8, -14-1, -14+1, -1.7-1, -1.7+1, true);
-        //AddItem(item9, 0, 0, 0, 0);
     AddItem(item10, 2.8-1, 2.8+1, -1.6-1, -1.6+1, false);
     AddItem(item11, -5.18-1, -5.18+1, -2.9-1, -2.9+1, true);
     AddItem(item12, -1.8-1, -1.8+1, -4.2-1, -4.2+1, false);
@@ -330,13 +392,9 @@ int main() {
     AddItem(item14, -13-1, -13+1, -4.73-1, -4.73+1, true);
     AddItem(item15, -5.18-1, -5.18+1, -4.3-1, -4.3+1, true);
     AddItem(item16, 2.8-1, 2.8+1, -4.3-1, -4.3+1, false);
-        //AddItem(item17, 0, 0, 0, 0);
-
     AddItem(item22, -10-1, -10+1, -2.8-1, -2.8+1, false);
-
-        //AddItem(item24, 0, 0, 0, 0);
     AddItem(item25, -10-1, -10+1, -1.8-1, -1.8+1, false);
-    AddItem(item26, 3.84-1, 3.84+1, 2.7-1, 2.7+1, true);
+    AddItem(item26, 3.84-1, 3.84+1, -2.7-1, -2.7+1, true);
     AddItem(item27, -5.18-1, -5.18+1, -2.8-1, -2.8+1, true);
     AddItem(item28, -6.17-1, -6.17+1, -1.46-1, -1.46+1, false);
     
@@ -349,7 +407,9 @@ int main() {
     auto [KidIdle, KidIdleAnim] = AssimpModel::LoadAnimatedModel(playerIdle, -1, false, 0x660000);
     auto [kidWalk, KidWalkAnim] = AssimpModel::LoadAnimatedModel(playerWalk, -1, false, 0x660000);
     auto [KidRun, KidRunAnim] = AssimpModel::LoadAnimatedModel(playerRun, -1, false, 0x660000);
-    auto [KidSteal, KidStealAnim] = AssimpModel::LoadAnimatedModel(playerSteal, -1, false, 0x660000);   
+    auto [KidSteal, KidStealAnim] = AssimpModel::LoadAnimatedModel(playerSteal, -1, false, 0x660000);
+    auto [managerIdleModel, managerIdleAnim] = AssimpModel::LoadAnimatedModel(ManagerIdle, -1, false, 0x660000);
+    auto [ManagerWalkModel, managerWalkAnim] = AssimpModel::LoadAnimatedModel(ManagerWalk, -1, false, 0x660000);
 
     int i = 0;
     for (const auto& [itemPath, itemData] : itemPositions) {
@@ -399,7 +459,6 @@ int main() {
         playerMatrix = glm::rotate(playerMatrix, glm::radians(app.playerRot), glm::vec3(0.0f, 1.0f, 0.0f));
         playerMatrix = glm::scale(playerMatrix, glm::vec3(model_scale * 1.5));
         
-        //std::fprintf(stderr, "playerPos: %f %f %f\n", app.playerPos.x, app.playerPos.y, app.playerPos.z);
 
         if(playerState.isWalking)
         {
@@ -420,15 +479,14 @@ int main() {
                 playerState.isStealing = false;
             }
         }
-        if(playerState.isIdle)
+        if(playerState.isIdle && !playerState.isStealing)
         {
             KidIdleAnim.update(app.dt * time_speed);
             KidIdle.draw(KidIdleAnim.transforms(), projection, view, playerMatrix, sunPos, app.camera._position);
         }
 
 
-        model = glm::translate(model, glm::vec3(0.f, 0.f, 0.f));
-
+        
         for(size_t i = 0; i < itemModels.size(); ++i)
         {
             itemModels[i]->draw(itemAnims[i]->transforms(), projection, view, model, sunPos, app.camera._position);
@@ -441,6 +499,12 @@ int main() {
             
             //itemModel.draw(itemAnim.transforms(), projection, view, model * itemMatrix, sunPos, app.camera._position);
         }
+        
+        //model = glm::translate(model, glm::vec3(50.f, 0.f, 4.f));
+        //managerIdleAnim.update(app.dt * time_speed);
+        //managerIdleModel.draw(managerIdleAnim.transforms(), projection, view, model, sunPos, app.camera._position);
+        //managerWalkAnim.update(app.dt * time_speed);
+        //ManagerWalkModel.draw(managerWalkAnim.transforms(), projection, view, model, sunPos, app.camera._position);
 
 
         //itemTes.draw(itemTestAnim.transforms(), projection, view, model, sunPos, app.camera._position);

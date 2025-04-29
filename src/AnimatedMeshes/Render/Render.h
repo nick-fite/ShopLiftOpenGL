@@ -461,6 +461,7 @@ public:
             {
                 return textures.add(RenderTexture::LoadTexture(*it));
             }
+            return TextureHandle(-1);
         };
         std::vector<RenderMesh> renderMeshes;
         for (AnimMesh& mesh : animMeshes)

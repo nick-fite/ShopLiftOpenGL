@@ -67,7 +67,7 @@ AnimMesh AssimpAnimation::LoadMesh(const std::filesystem::path& path, const aiMe
             else
             {
                 t.path = path.parent_path() / std::string(file_name.data, file_name.length);
-                assert(std::filesystem::exists(t.path));
+                //assert(std::filesystem::exists(t.path));
             }
         }
     }
