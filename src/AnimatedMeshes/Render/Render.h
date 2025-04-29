@@ -42,11 +42,11 @@ struct RenderTexture
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         return RenderTexture(texture_name, type);
     }
-
-    static RenderTexture InvalidWhite()
+public:
+    static RenderTexture InvalidWhite(unsigned color = 0x666666)
     {
         std::fprintf(stderr, "loading white\n");
-        unsigned data = 0x666666;
+        unsigned data = color;
         return RenderTexture::FromMemory(TextureType::None, 1, 1, &data, GL_RGB);
     }
     ~RenderTexture() noexcept
@@ -104,7 +104,9 @@ using TextureHandle = int;
 
 struct TexturesDB
 {
+public:
     RenderTexture invalid = RenderTexture::InvalidWhite();
+
     std::vector<RenderTexture> textures;
     
     TextureHandle add(RenderTexture&& texture)
@@ -478,7 +480,7 @@ struct AssimpModel
     RenderModel model;
     Animation animation;
 
-    static AssimpModel LoadAnimatedModel(std::filesystem::path path, int animationIndex = -1, bool isStatic = false)
+    static AssimpModel LoadAnimatedModel(std::filesystem::path path, int animationIndex = -1, bool isStatic = false, unsigned color = 0x666666)
     {
         Assimp::Importer importer;
         (void)importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 4);
@@ -510,7 +512,7 @@ struct AssimpModel
         //assert(scene->mRootNode);
         
         BoneInfoRemap bonesInfo;
-        TexturesDB textures;
+        TexturesDB textures{RenderTexture::InvalidWhite(color)};
         std::vector<AnimMesh> meshes = AssimpAnimation::LoadModelMeshWithAnimationsWeights(path, *scene, bonesInfo);
         if(!bonesInfo.hasAnyBones())
         {

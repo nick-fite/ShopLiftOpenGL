@@ -18,6 +18,15 @@ struct Player
     bool isStealing = false;
 };
 
+struct Item{
+    float xStart;
+    float xEnd;
+    float yStart;
+    float yEnd;
+    bool isLeft = false;
+    int index;
+};
+
 
 struct AppState {
     Camera camera = Camera(glm::vec3(0.f, 0.f, 3.f));
@@ -89,6 +98,32 @@ static void OnMouseScroll(GLFWwindow* window, double xoffset, double yoffset) {
     }
 }*/
 
+bool isInRestrictedZone(const glm::vec3& position) {
+    // Define the restricted x-coordinate ranges
+    const struct {
+        float min;
+        float max;
+    } restrictedRanges[] = {
+        {-13.78f, -10.35f},
+        {-9.6f, -6.35f},
+        {-5.09f, -2.1f},
+        {-0.9f, 2.5f}
+    };
+    
+    // Check if position is within any of the ranges
+    for (const auto& range : restrictedRanges) {
+        if (position.x >= range.min && position.x <= range.max) {
+            if(position.z > -0.9 || position.z < -5.f)
+            {
+                return false;
+            }
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 static void HandleInput(GLFWwindow* window, float dt, glm::vec3& poosition, float& rot, Player& playerState)
 {
     if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
@@ -116,6 +151,8 @@ static void HandleInput(GLFWwindow* window, float dt, glm::vec3& poosition, floa
     }
 
     float speed = playerState.isRunning ? 9.f : 5.0f;
+    bool moved = false;
+    glm::vec3 originalPosition = poosition;
     if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         rot = 0.0f;
@@ -125,6 +162,7 @@ static void HandleInput(GLFWwindow* window, float dt, glm::vec3& poosition, floa
             playerState.isWalking = true;
         }
         poosition += glm::vec3(0.f, 0.f, speed * dt);
+        moved = true;
     }
     if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
@@ -135,10 +173,10 @@ static void HandleInput(GLFWwindow* window, float dt, glm::vec3& poosition, floa
         }
         playerState.isWalking = true;
         poosition += glm::vec3(0.f, 0.f, -speed * dt);
+        moved = true;
     }
     if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        
         rot = 90.0f;
         playerState.isIdle = false;
         if(!playerState.isRunning)
@@ -146,6 +184,7 @@ static void HandleInput(GLFWwindow* window, float dt, glm::vec3& poosition, floa
             playerState.isWalking = true;
         }
         poosition += glm::vec3(speed * dt, 0.f, 0.f);
+        moved = true;
     }
     if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
@@ -156,7 +195,15 @@ static void HandleInput(GLFWwindow* window, float dt, glm::vec3& poosition, floa
             playerState.isWalking = true;
         }
         poosition += glm::vec3(-speed * dt, 0.f, 0.f);
+        moved = true;
     }
+
+
+    if(moved && isInRestrictedZone(poosition))
+    {
+        poosition = originalPosition;
+    }
+
     if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     {
         std::fprintf(stderr, "position: %d, %d, %d\n", poosition.x, poosition.y, poosition.z);
@@ -179,6 +226,37 @@ static void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, in
         //app->_pause_animation ^= true;
     }
 }
+
+// Item storage map with file path -> position mapping
+std::map<const char*, Item> itemPositions;
+
+// Function to add item to the map
+const char* AddItem(const std::string& filePath, float xStart, float xEnd, float yStart, float yEnd, bool isLeft) {
+    // Allocate memory for the path string that persists after function returns
+    const char* pathCopy = _strdup(filePath.c_str());
+    
+    // Store in the map
+    itemPositions[pathCopy].xStart = xStart;
+    itemPositions[pathCopy].xEnd = xEnd;
+    itemPositions[pathCopy].yStart = yStart;
+    itemPositions[pathCopy].yEnd = yEnd;
+    itemPositions[pathCopy].isLeft = isLeft;
+    //itemPositions[pathCopy].index = index;
+    
+    // Return the pointer for reference
+    return pathCopy;
+}
+
+// Function to clean up allocated memory when done
+void CleanupItems() {
+    for (auto& [path, _] : itemPositions) {
+        free((void*)path);
+    }
+    itemPositions.clear();
+}
+
+std::vector<std::shared_ptr<RenderModel>> itemModels;
+std::vector<std::shared_ptr<Animation>> itemAnims;
 
 int main() {
     
@@ -206,28 +284,86 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
 
-    const char* const worldPath = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Scene.fbx";
+    const char* const worldPath = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/SceneNoItems.fbx";
     const char* const playerIdle = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/player/testKidTheif_Idle_withEverything.dae";
     const char* const playerWalk = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/player/testKidTheif_Walk_withEverything.dae";
     const char* const playerRun = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/player/testKidTheif_Run_withEverything.dae";
     const char* const playerSteal = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/player/testKidTheif_Steal_withEverything.dae";
+    const char* const item1 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_1.fbx";
+    const char* const item2 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_2.fbx";
+    const char* const item3 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_3.fbx";
+    const char* const item4 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_4.fbx";
+    const char* const item5 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_5.fbx";
+    const char* const item6 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GumBallsVar_6.fbx";
+    const char* const item7 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GummyWormVar_1.fbx";
+    const char* const item8 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GummyWormVar_2.fbx";
+    //const char* const item9 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GummyWormVar_3.fbx";
+    const char* const item10 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GummyWormVar_4.fbx";
+    const char* const item11 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GummyWormVar_5.fbx";
+    const char* const item12 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_GummyWormVar_6.fbx";
+    const char* const item13 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_JawBreakerVar_1.fbx";
+    const char* const item14 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_JawBreakerVar_2.fbx";
+    const char* const item15 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_JawBreakerVar_3.fbx";
+    const char* const item16 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_JawBreakerVar_4.fbx";
+    const char* const item17 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_JawBreakerVar_5.fbx";
+    const char* const item22 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_.fbx";
+    //const char* const item23 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_.fbx";
+    const char* const item24 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_2.fbx";
+    const char* const item25 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_3.fbx";
+    const char* const item26 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_4.fbx";
+    const char* const item27 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_5.fbx";
+    const char* const item28 = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/Map/Item_MikeIke_6.fbx";
 
+    AddItem(item1, -13, -12, -1.8, 0.2, false);
+    AddItem(item2, -12, -14, -2.7, -0.7, true);
+    AddItem(item3, -9.6-1, -9.6+1, -1.8-1, -1.8+1, true);
+    AddItem(item4, 2.8-1, 2.8+1, -2.8-1, -2.8+1, false);
+    AddItem(item5, -10-1, -10+1, -4.2-1, -4.2+1, false);
+    AddItem(item6, -1.8-1, -1.8+1, -2.8-1, -2.8+1, false);
+    AddItem(item7, -14-1, -14+1, 0.8-1, 0.8+1, false);
+    AddItem(item8, -14-1, -14+1, -1.7-1, -1.7+1, true);
+        //AddItem(item9, 0, 0, 0, 0);
+    AddItem(item10, 2.8-1, 2.8+1, -1.6-1, -1.6+1, false);
+    AddItem(item11, -5.18-1, -5.18+1, -2.9-1, -2.9+1, true);
+    AddItem(item12, -1.8-1, -1.8+1, -4.2-1, -4.2+1, false);
+    AddItem(item13, -14-1, -14+1, -2.39-1, -2.39+1, false);
+    AddItem(item14, -13-1, -13+1, -4.73-1, -4.73+1, true);
+    AddItem(item15, -5.18-1, -5.18+1, -4.3-1, -4.3+1, true);
+    AddItem(item16, 2.8-1, 2.8+1, -4.3-1, -4.3+1, false);
+        //AddItem(item17, 0, 0, 0, 0);
 
+    AddItem(item22, -10-1, -10+1, -2.8-1, -2.8+1, false);
+
+        //AddItem(item24, 0, 0, 0, 0);
+    AddItem(item25, -10-1, -10+1, -1.8-1, -1.8+1, false);
+    AddItem(item26, 3.84-1, 3.84+1, 2.7-1, 2.7+1, true);
+    AddItem(item27, -5.18-1, -5.18+1, -2.8-1, -2.8+1, true);
+    AddItem(item28, -6.17-1, -6.17+1, -1.46-1, -1.46+1, false);
+    
+    
     const float model_scale = 0.012f;
     const int animation_index = -1;
     const float time_speed = 1.f;
     
     auto [worldModel, worldAnim] = AssimpModel::LoadAnimatedModel(worldPath, -1, true);
-    auto [KidIdle, KidIdleAnim] = AssimpModel::LoadAnimatedModel(playerIdle, -1, false);
-    auto [kidWalk, KidWalkAnim] = AssimpModel::LoadAnimatedModel(playerWalk, -1, false);
-    auto [KidRun, KidRunAnim] = AssimpModel::LoadAnimatedModel(playerRun, -1, false);
-    auto [KidSteal, KidStealAnim] = AssimpModel::LoadAnimatedModel(playerSteal, -1, false);
-    
+    auto [KidIdle, KidIdleAnim] = AssimpModel::LoadAnimatedModel(playerIdle, -1, false, 0x660000);
+    auto [kidWalk, KidWalkAnim] = AssimpModel::LoadAnimatedModel(playerWalk, -1, false, 0x660000);
+    auto [KidRun, KidRunAnim] = AssimpModel::LoadAnimatedModel(playerRun, -1, false, 0x660000);
+    auto [KidSteal, KidStealAnim] = AssimpModel::LoadAnimatedModel(playerSteal, -1, false, 0x660000);   
+
+    int i = 0;
+    for (const auto& [itemPath, itemData] : itemPositions) {
+        itemPositions[itemPath].index = i;
+        auto [itemModel, itemAnim] = AssimpModel::LoadAnimatedModel(itemPath, -1, true, 0x006600);
+        itemModels.push_back(std::make_shared<RenderModel>(std::move(itemModel)));
+        itemAnims.push_back(std::make_shared<Animation>(std::move(itemAnim)));
+        i++;
+    }
+
+
     app.camera._position = glm::vec3(-5.f, 18.5f, -11.9f);
     app.camera._yaw = -269.2f;
     app.camera._pitch = -51.2f;
-
-    //glm::vec3 sunPos = glm::vec3(-3.f, 10.f, 0.f);
 
     app.camera.force_refresh();
 
@@ -239,7 +375,6 @@ int main() {
         app.lastFrameTime = currentTime;
         //HandleInput(window);
 
-        //KidAnim.update(app.dt * time_speed);
 
         if(app.ScreenHeight <= 0)
         {
@@ -264,7 +399,7 @@ int main() {
         playerMatrix = glm::rotate(playerMatrix, glm::radians(app.playerRot), glm::vec3(0.0f, 1.0f, 0.0f));
         playerMatrix = glm::scale(playerMatrix, glm::vec3(model_scale * 1.5));
         
-        std::fprintf(stderr, "playerPos: %f %f %f\n", app.playerPos.x, app.playerPos.y, app.playerPos.z);
+        //std::fprintf(stderr, "playerPos: %f %f %f\n", app.playerPos.x, app.playerPos.y, app.playerPos.z);
 
         if(playerState.isWalking)
         {
@@ -292,7 +427,23 @@ int main() {
         }
 
 
-        
+        model = glm::translate(model, glm::vec3(0.f, 0.f, 0.f));
+
+        for(size_t i = 0; i < itemModels.size(); ++i)
+        {
+            itemModels[i]->draw(itemAnims[i]->transforms(), projection, view, model, sunPos, app.camera._position);
+            //itemMatrix = glm::rotate(itemMatrix, glm::radians(app.playerRot), glm::vec3(0.0f, 1.0f, 0.0f));
+            //std::fprintf(stderr, "itemPos: %d %d %d\n", itemData.xStart, 0.f, itemData.yStart);
+            //std::fprintf(stderr, "itemPos: %f %f %f\n", app.playerPos.x, app.playerPos.y, app.playerPos.z);
+            //std::fprintf(stderr, "itemPos: %f %f %f\n", itemMatrix[3][0], itemMatrix[3][1], itemMatrix[3][2]);
+            //std::fprintf(stderr, "itemPos: %d %d %d\n", itemData.xStart, 0.f, itemData.yStart);
+            //std::fprintf(stderr, "itemPos: %f %f %f\n", app.playerPos.x, app.playerPos.y, app.playerPos.z);
+            
+            //itemModel.draw(itemAnim.transforms(), projection, view, model * itemMatrix, sunPos, app.camera._position);
+        }
+
+
+        //itemTes.draw(itemTestAnim.transforms(), projection, view, model, sunPos, app.camera._position);
         
         //KidModel.draw(KidAnim.transforms(), projection, view, playerMatrix, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
         //std::fprintf(stderr, "Camera position: %f %f %f\n", view, app.camera._position.y, app.camera._position.z);
