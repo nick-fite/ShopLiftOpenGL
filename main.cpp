@@ -103,17 +103,19 @@ int main() {
     glfwSetWindowUserPointer(window, &app);
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, OnWindowResize);
-    //glfwSetCursorPosCallback(window, OnMouseMove);
-    //glfwSetScrollCallback(window, OnMouseScroll);
+    glfwSetCursorPosCallback(window, OnMouseMove);
+    glfwSetScrollCallback(window, OnMouseScroll);
     glfwSetKeyCallback(window, OnKeyEvent);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
     glewInit();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const char* const worldPath = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/TestAssets/EverythingScene.fbx";
-    const char* const playerPath = "D:/Profile Redirect/nfite/Desktop/NEW/ShopLiftOpenGL/assets/TestAssets/Shelf.fbx";
+    const char* const worldPath = "D:/profile redirect/nfite/Desktop/ShopLiftOpenGL - Copy/assets/TestAssets/sceneFinal.fbx";
+    const char* const playerPath = "D:/profile redirect/nfite/Desktop/ShopLiftOpenGL - Copy/assets/TestAssets/VampireDance.fbx";
 
     const float model_scale = 0.012f;
     const int animation_index = -1;
@@ -133,9 +135,9 @@ int main() {
         const float currentTime = float(glfwGetTime());
         app.dt = currentTime - app.lastFrameTime;
         app.lastFrameTime = currentTime;
-        //HandleInput(window);
+        HandleInput(window);
 
-        //animation.update(app.dt * time_speed);
+        KidAnim.update(app.dt * time_speed);
 
         if(app.ScreenHeight <= 0)
         {
@@ -150,7 +152,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         worldModel.draw(worldAnim.transforms(), projection, view, model, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
-        KidModel.draw(KidAnim.transforms(), projection, view, model, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
+        //KidModel.draw(KidAnim.transforms(), projection, view, model, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
         //std::fprintf(stderr, "Camera position: %f %f %f\n", view, app.camera._position.y, app.camera._position.z);
 
         glfwSwapBuffers(window);

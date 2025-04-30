@@ -44,9 +44,26 @@ AnimMesh AssimpAnimation::LoadMesh(const std::filesystem::path& path, const aiMe
     } kTexturesToFind[] =
     {
         {aiTextureType_DIFFUSE, TextureType::Diffuse},
+        {aiTextureType_BASE_COLOR, TextureType::Diffuse},
         {aiTextureType_NORMALS, TextureType::Normal},
+        {aiTextureType_HEIGHT, TextureType::Normal},
+        {aiTextureType_NORMAL_CAMERA, TextureType::Normal},
+        //{aiTextureType_MAYA_SPECULAR_ROUGHNESS, TextureType::Normal},
     };
     std::vector<AnimTexture> textures;
+
+    for(int i = 0; i <  26; i++)
+    {
+        aiString file_name;
+        if (material->GetTexture(aiTextureType(i), 0, &file_name) == aiReturn_SUCCESS)
+        {
+            if(i == 25)
+            {
+                std::fprintf(stderr, "texture: %s\n", file_name.C_Str());
+            }
+        }
+    }
+
     for (auto [assimp_type, type] : kTexturesToFind)
     {
         // Get first (0) available texture of a given type.
