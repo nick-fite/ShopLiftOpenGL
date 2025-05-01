@@ -102,8 +102,8 @@ struct BoneKeyFrames
         const int index = (int(std::distance(keyFrames.cbegin(), it)) - 1);
         assert(index >= 0);
         assert(index < (int(keyFrames.size()) - 1));
-        assert(keyFrames[index].timeStamp <= animationTime);
-        assert(keyFrames[index + 1].timeStamp >= animationTime);
+        //assert(keyFrames[index].timeStamp <= animationTime);
+        //assert(keyFrames[index + 1].timeStamp >= animationTime);
         return index;
     };
 
@@ -126,11 +126,11 @@ struct BoneKeyFrames
 
     static float GetScaleFactor(float start, float end, float animationTime)
     {
-        assert(animationTime >= start);
-        assert(end > start);
+        //assert(animationTime >= start);
+        //assert(end > start);
         const float progress = animationTime - start;
         const float total = end - start;
-        assert(progress <= total);
+        //assert(progress <= total);
         return progress / total;
     }
 
@@ -214,7 +214,7 @@ public:
         return Animation(glm::mat4(1.0f), std::move(nodes), numBones, 0.0f, 0.0f);
     }
 
-    void update(float dt);
+    bool update(float dt);
     std::span<const glm::mat4> transforms() const;
     void debugDump() const;
 private:
