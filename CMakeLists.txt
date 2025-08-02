@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(ShopliftingBoy)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 if(MSVC)
   add_compile_options(/EHsc /MP)
 else()
@@ -19,7 +19,7 @@ find_package(GLEW REQUIRED)
 find_package(Freetype REQUIRED)
 find_package(assimp REQUIRED)
 find_package(glm REQUIRED)
-find_package(freeimage REQUIRED)
+find_package(stb REQUIRED)
 find_package(OpenGL REQUIRED)
 
 set(SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -39,7 +39,6 @@ target_link_libraries(ShopliftingBoy PRIVATE
     Freetype::Freetype
     assimp::assimp
     glm::glm
-    freeimage::FreeImage
-    freeimage::FreeImagePlus
+    ${Stb_INCLUDE_DIR}
     OpenGL::GL
 )
