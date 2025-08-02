@@ -315,9 +315,11 @@ void main()
     float spec = pow(max(dot(view_dir, reflect_dir), 0.0f), specular_P);
     vec3 specular = specular_K * spec * light_color;
     
-    vec3 object_color = vec3(texture(diffuse_sampler, v_UV));
+    vec4 tex_color = texture(diffuse_sampler, v_UV);
+    vec3 object_color = tex_color.rgb;
+    float alpha = tex_color.a;
     vec3 color = (ambient + diffuse + specular) * object_color;
-    _Color = vec4(color, 1.0f);
+    _Color = vec4(color, alpha);
 }
 )";
         ShaderProgram shader = ShaderProgram::FromBuffers(VertexShader, FragmentShader);
@@ -461,7 +463,9 @@ public:
             {
                 return textures.add(RenderTexture::LoadTexture(*it));
             }
-            return TextureHandle(-1);
+
+            std::fprintf(stderr, "No texture of type %d found. Using invalid white texture.\n", int(type));
+            return textures.add(RenderTexture::InvalidWhite());
         };
         std::vector<RenderMesh> renderMeshes;
         for (AnimMesh& mesh : animMeshes)
@@ -485,6 +489,9 @@ struct AssimpModel
     {
         Assimp::Importer importer;
         (void)importer.SetPropertyInteger(AI_CONFIG_PP_LBW_MAX_WEIGHTS, 4);
+        (void)importer.SetPropertyFloat(AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY, 1.0f);
+        (void)importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
+
         const aiScene* scene; 
         if(!isStatic)
         {

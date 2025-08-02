@@ -342,6 +342,8 @@ int main() {
     glewInit();
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     const char* const worldPath = "assets/Map/SceneNoItems.fbx";
     const char* const playerIdle = "assets/player/testKidTheif_Idle_withEverything.dae";
@@ -433,7 +435,10 @@ int main() {
         const float currentTime = float(glfwGetTime());
         app.dt = currentTime - app.lastFrameTime;
         app.lastFrameTime = currentTime;
-        //HandleInput(window);
+        HandleInput(window);
+
+
+        KidAnim.update(app.dt * time_speed);
 
 
         if(app.ScreenHeight <= 0)
@@ -510,6 +515,7 @@ int main() {
         //itemTes.draw(itemTestAnim.transforms(), projection, view, model, sunPos, app.camera._position);
         
         //KidModel.draw(KidAnim.transforms(), projection, view, playerMatrix, glm::vec3(0.0f, 1.0f, 3.0f), app.camera._position);
+
         //std::fprintf(stderr, "Camera position: %f %f %f\n", view, app.camera._position.y, app.camera._position.z);
 
         glfwSwapBuffers(window);
