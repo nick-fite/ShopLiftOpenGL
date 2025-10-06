@@ -2,7 +2,7 @@
 {
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.configureArgs": [
-        "-DCMAKE_TOOLCHAIN_FILE=C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        "-DCMAKE_TOOLCHAIN_FILE=/Users/nicholasfite/dev/vcpkg/scripts/buildsystems/vcpkg.cmake"
     ],
     "files.associations": {
         "glew.h": "c",
